@@ -1230,7 +1230,7 @@ progress {
 
     .colforget-md-6 {
         flex: 0 0 auto;
-        width: 55%;
+        width: 60%;
     }
 
     .col-md-7 {
@@ -7851,7 +7851,7 @@ fieldset:disabled .btn {
 }
 
 .mb-4 {
-    margin-bottom: 1.5rem !important;
+    margin-bottom: 0.5rem !important;
 }
 
 .mb-5 {

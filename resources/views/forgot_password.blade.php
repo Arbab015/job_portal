@@ -11,9 +11,9 @@
                     <h3>Forget Password</h3>
                 </div>
                 <div class="forget_msg">
-                  
+                  <p> Please enter the email address you'd like to your password reset information sent to </p>
                 </div>
-                <form method="POST" action="{{ route('forgetpassword.email') }}">
+                <form method="POST" action="{{ route('forgot_password.reset') }}">
                     @csrf
                     @if ($errors->any())
                     <div class="alert alert-danger">
@@ -29,7 +29,10 @@
                             value="{{ old('email')}}">
                         <label for="floatingInput">Email address</label>
                     </div>
-                    <button type="submit" class="btn btn-primary py-3 w-100 mb-4">Send Email</button>
+                    <button type="submit" class="btn btn-primary py-3 w-100 mb-4">Send Reset Link</button>
+
+                    <a class="login-back" href="login"> Back to login</a>
+                 
                 </form>
 
             </div>

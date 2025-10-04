@@ -35,7 +35,7 @@
                      <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
                              class="far fa-file-alt me-2"></i>Pages</a>
                      <div class="dropdown-menu bg-transparent border-0">
-                         <a href="{{ asset('signin')}}" class="dropdown-item">Sign In</a>
+                         <a href="{{ asset('login')}}" class="dropdown-item">Sign In</a>
                          <a href="{{ asset('register')}}" class="dropdown-item">Sign Up</a>
                          <a href="{{ asset('404')}}" class="dropdown-item">404 Error</a>
                          <a href="{{ asset('blank')}}" class="dropdown-item">Blank Page</a>
