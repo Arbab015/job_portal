@@ -84,7 +84,10 @@
             <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
                 <a href="#" class="dropdown-item">My Profile</a>
                 <a href="#" class="dropdown-item">Settings</a>
-                <a href="login" class="dropdown-item">Log Out</a>
+                 <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+            @csrf {{-- CSRF token for security --}}
+            <button type="submit" class="btn btn-link nav-link">Logout</button>
+        </form>
             </div>
         </div>
     </div>

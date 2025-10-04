@@ -7587,7 +7587,9 @@ fieldset:disabled .btn {
 .align-items-end {
     align-items: flex-end !important;
 }
-
+.header-center{
+    justify-content: center;
+}
 .align-items-center {
     align-items: center !important;
 }
@@ -8343,6 +8345,7 @@ fieldset:disabled .btn {
 
 .text-primary {
     color: #009cff !important;
+    font-size: 31px;
 }
 
 .text-secondary {

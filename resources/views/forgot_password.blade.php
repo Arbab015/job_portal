@@ -4,11 +4,8 @@
     <div class="row h-100 align-items-center justify-content-center" style="min-height: 100vh;">
         <div class="col-12 colforget-sm-8 colforget-md-6 colforget-lg-5 colforget-xl-4">
             <div class="bg-light rounded p-4 p-sm-5 my-4 mx-3">
-                <div class="d-flex align-items-center justify-content-between mb">
-                    <a href="" class="">
-                        <h3 class="text-primary">DASHMIN</h3>
-                    </a>
-                    <h3>Forget Password</h3>
+                <div class="d-flex align-items-center header-center mb">
+                    <h3 class="text-primary">Forget Password</h3>
                 </div>
                 <div class="forget_msg">
                   <p> Please enter the email address you'd like to your password reset information sent to </p>
