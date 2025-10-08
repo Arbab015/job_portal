@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('portal__users', function (Blueprint $table) {
+        Schema::create('designations', function (Blueprint $table) {
             $table->id()->Primary();
             $table->string('name')->unique();
             $table->timestamps();
@@ -23,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('portal__users');
+        Schema::dropIfExists('designations');
     }
 };

@@ -1,4 +1,4 @@
-@extends('layouts.master', ['hideComponent' => TRUE] )
+@extends('layouts.master', ['hideComponent' => TRUE])
 @section('content')
 
 <div class="container-new">
@@ -9,41 +9,56 @@
                     <h3 class="text-primary">Forget Password</h3>
                 </div>
                 <div class="forget_msg">
-                    <p> Please enter the email address you'd like to your password reset information sent to </p>
+                    <p>Please enter the email address you'd like to your password reset information sent to</p>
                 </div>
-                <form method="POST" action="{{ route('forgot_password.reset') }}">
+
+                <form id="forgetForm" method="POST" action="{{ route('forgot_password.reset') }}">
+                    @csrf
+
                     @if (session('status'))
-                    <div class="alert alert-success" role="alert">
-                        {{ session('status') }}
-                    </div>
+                        <div class="alert alert-success" role="alert">
+                            {{ session('status') }}
+                        </div>
                     @endif
 
-                    @csrf
                     @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
                     @endif
+
                     <div class="form-floating mb-3">
-                        <input type="email" class="form-control" name="email" id="floatingInput"
-                            value="{{ old('email')}}">
+                        <input type="email" class="form-control" name="email" id="floatingInput" value="{{ old('email') }}" required>
                         <label for="floatingInput">Email address</label>
                     </div>
 
-                    <button type="submit" class="btn btn-primary py-3 w-100 mb-4">Send Reset Link</button>
+                    <button type="submit" id="submitBtn" class="btn btn-primary py-3 w-100 mb-4">
+                        Send Reset Link
+                    </button>
+                    
 
-                    <div id="loadingSpinner" class="spinner-border text-primary" role="status" style="display: none;">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-
-                    <a class="login-back" href="login"> Back to login</a>
+                    <a class="login-back" href="{{ route('login') }}">Back to login</a>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const form = document.getElementById("forgetForm");
+    const submitBtn = document.getElementById("submitBtn");
+
+    form.addEventListener("submit", function() {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Processing...";
+    });
+});
+</script>
+@endpush
 @endsection

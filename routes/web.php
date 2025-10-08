@@ -14,9 +14,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index']);
 
 
-    Route::get('designations', [DesignationController::class, 'index'])->name('designations.index');  //show designations page
-    Route::post('designations.store', [DesignationController::class, 'store'])->name('designations.store');   //  for add new designation
-    
+  Route::get('designations', [DesignationController::class, 'index'])->name('designations.index');
+Route::post('designations', [DesignationController::class, 'store'])->name('designations.store');
+Route::put('designations/{id}', [DesignationController::class, 'update'])->name('designations.update');
+Route::delete('designations/{id}', [DesignationController::class, 'destroy'])->name('designations.destroy');
+
 
  
     Route::get('/typography', fn() => view('typography'));
