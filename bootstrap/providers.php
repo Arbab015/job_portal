@@ -7,4 +7,5 @@ return [
     App\Providers\ServiceProvider::class,
     App\Providers\myNewProvider::class,
     App\Providers\myServiceProvider::class,
+    Yajra\DataTables\DataTablesServiceProvider::class,
 ];

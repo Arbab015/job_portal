@@ -91,7 +91,9 @@
     background: #FFFFFF;
     transition: 0.5s;
 }
-
+.designation_area{
+    padding: 20px;
+}
 @media (min-width: 992px) {
     .sidebar {
         margin-left: 0;

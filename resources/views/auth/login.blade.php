@@ -9,7 +9,6 @@
                 </div>
                 <form method="POST" action="{{ route('login.post') }}">
                     @csrf
-
                     @if (session('status'))
                     <div class="alert alert-success" role="alert">
                         {{ session('status') }}

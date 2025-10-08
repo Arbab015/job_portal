@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Hash;
     { 
         public function showRegistrationForm()
         {
-          Auth::logout();
             return view('auth.register'); 
         }
 
@@ -24,6 +23,7 @@ use Illuminate\Support\Facades\Hash;
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string|min:8|max:16|confirmed', 
             ]);
+            
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
@@ -31,7 +31,7 @@ use Illuminate\Support\Facades\Hash;
 
 
             ]);
-             return redirect()->route('login.get')->with('success', 'Registration successful! Please log in.');
+             return redirect()->route('login')->with('success', 'Registration successful! Please log in.');
         }
 
     

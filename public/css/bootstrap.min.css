@@ -4863,6 +4863,8 @@ fieldset:disabled .btn {
     background-clip: border-box;
     border: 1px solid rgba(0, 0, 0, 0.125);
     border-radius: 5px;
+    padding: 16px;
+    line-height: 53px;
 }
 
 .card>hr {
