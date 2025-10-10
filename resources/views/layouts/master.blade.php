@@ -38,7 +38,8 @@
     {{-- Template Stylesheet --}}
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
-    @vite(['resources/js/app.js'])
+
+  @vite(['resources/js/app.js'])
 </head>
 
 <body>
@@ -82,7 +83,7 @@
     <script src="{{ asset('js/main.js') }}"></script>
 
      <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
-
-</body>
+    
+    </body>
 
 </html>

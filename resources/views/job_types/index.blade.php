@@ -3,7 +3,7 @@
 @section('content')
 <div class="designation_area">
     <div class="d-flex align-items-center justify-content-between mb-4">
-        <h2 class="title">Designations</h2>
+        <h2 class="title">Job Types</h2>
         <button type="button" class="btn btn-primary" id="addBtn">Add</button>
     </div>
 
@@ -22,12 +22,12 @@
     @endif
 
     <div class="card">
-        <div class="card-header">Designation List</div>
+        <div class="card-header">Job Types List</div>
         <div class="card-body">
-            <table class="table table-bordered" id="designations-table">
+            <table class="table table-bordered" id="job-types-table">
                 <thead>
                     <tr>
-                        <th>Designation Name</th>
+                        <th>Job Type</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -36,11 +36,10 @@
     </div>
 </div>
 
-
 <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form method="POST" class="needs-validation" novalidate id="designationForm">
+            <form method="POST" class="needs-validation" id="job-types-form">
                 @csrf
                 <div id="methodField"></div>
 
@@ -51,10 +50,9 @@
 
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>Designation Name</label>
-                        <input type="text" name="name" class="form-control" required
-                            placeholder="Enter a designation name">
-                        <div class="invalid-feedback">Please enter a designation name.</div>
+                        <label>Tob Type</label>
+                        <input type="text" name="title" class="form-control" required placeholder="Enter a new Job Type">
+                        <div class="invalid-feedback">Please enter a Job Title.</div>
                     </div>
                 </div>
 
@@ -66,26 +64,23 @@
         </div>
     </div>
 </div>
-
-
 @endsection
 
 @push('scripts')
 <script>
 $(function() {
     const modal = new bootstrap.Modal(document.getElementById('myModal'));
-    const form = $('#designationForm');
+    const form = $('#job-types-form');
     const methodField = $('#methodField');
-    const nameInput = $('input[name="name"]');
+    const nameInput = $('input[name="title"]');
 
-    $('#designations-table').DataTable({
+    $('#job-types-table').DataTable({
         processing: true,
         serverSide: true,
-        ajax: "{{ route('designations.index') }}",
-        columns: [
-            {
-                data: 'name',
-                name: 'name'
+        ajax: "{{ route('job_types.index') }}",
+        columns: [{
+                data: 'title',
+                name: 'title'
             },
             {
                 data: 'actions',
@@ -96,24 +91,29 @@ $(function() {
         ]
     });
 
+   // add button functionality
     $('#addBtn').on('click', function() {
         methodField.html('');
         nameInput.val('');
-        $('#myModalLabel').text('Add Designation');
+        $('#myModalLabel').text('Add Job Type');
         modal.show();
     });
 
+    // edit button functionality
     $(document).on('click', '.edit-btn', function() {
         const id = $(this).data('id');
-        const name = $(this).data('name');
-     console.log(name)
-        form.attr('action', '/designations/' + id);
+        const title = $(this).data('title');
+     
+        form.attr('action', '/job_types/' + id);
         methodField.html('<input type="hidden" name="_method" value="PUT">');
-        nameInput.val(name);
-        $('#myModalLabel').text('Edit Designation');
+        nameInput.val(title);
+        $('#myModalLabel').text('Edit Job Type');
         modal.show();
+
     });
 
+
+    //  form validation check
     form.on('submit', function(e) {
         if (!this.checkValidity()) {
             e.preventDefault();

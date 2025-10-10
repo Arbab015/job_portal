@@ -12,9 +12,9 @@
                  </div>
                  <div class="ms-3">
                      <h6 class="mb-0">
-                     @Auth
-                     {{ Auth::user()->name}}
-                      @endauth
+                         @Auth
+                         {{ Auth::user()->name}}
+                         @endauth
                      </h6>
                      <span>Admin</span>
                  </div>
@@ -23,9 +23,15 @@
                  <a href="{{ asset('dashboard') }}" class="nav-item nav-link "><i
                          class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
 
-               <a href="{{ route('designations.index') }}" class="nav-item nav-link">
-    <i class="fa fa-th me-2"></i>Designations
-</a>
+                 <a href="{{ route('designations.index') }}" class="nav-item nav-link">
+                     <i class="fa fa-th me-2"></i>Designations
+                 </a>
+                  <a href="{{ route('job_types.index') }}" class="nav-item nav-link">
+                    <i class="fa-solid fa-layer-group"></i> Job Types
+                 </a>
+                   <a href="{{ route('jobs.index') }}" class="nav-item nav-link">
+                    <i class="fa-solid fa-briefcase"></i> Jobs
+                 </a>
 
 
              </div>
