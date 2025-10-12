@@ -9,4 +9,9 @@ class Designation extends Model
      protected $fillable = [
         'name',
     ];
+
+      public function jobs()
+    {
+        return $this->hasMany(Job::class);
+    }
 }

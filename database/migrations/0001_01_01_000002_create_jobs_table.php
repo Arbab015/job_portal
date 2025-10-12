@@ -16,11 +16,17 @@ return new class extends Migration
             $table->string('title')->unique();
             $table->string('slug')->unique();
             $table->string('description');
-            $table->foreign('job_type_id');
-            $table->string('designation_id');
+
+            // Short foreign key syntax
+            $table->foreignId('job_type_id')
+                  ->constrained('job_types')
+                  ->cascadeOnDelete();
+
+            $table->foreignId('designation_id')
+                  ->constrained('designations')
+                  ->cascadeOnDelete();
+
             $table->timestamps();
-
-
             
         });
 

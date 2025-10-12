@@ -9,4 +9,10 @@ class JobType extends Model
     protected $fillable = [
         'title',
     ];
+
+     public function jobs()
+    {
+        return $this->hasMany(Job::class);
+    }
+    
 }

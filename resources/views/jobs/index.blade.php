@@ -4,7 +4,7 @@
 <div class="designation_area">
     <div class="d-flex align-items-center justify-content-between mb-4">
         <h2 class="title">Jobs</h2>
-        <button type="submit" onclick="window.location='{{ route('jobs.add') }} '"  class="btn btn-primary" id="addBtn">Add</button>
+        <button type="submit" onclick="window.location='{{ route('jobs.create') }} '"  class="btn btn-primary" id="addBtn">Add</button>
 
 
     </div>

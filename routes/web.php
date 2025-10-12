@@ -5,9 +5,9 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ForgetPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\Auth\DesignationController;
-use App\Http\Controllers\Auth\JobTypeController;
-use App\Http\Controllers\Auth\JobController;
+use App\Http\Controllers\DesignationController;
+use App\Http\Controllers\JobTypeController;
+use App\Http\Controllers\JobController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 Auth::routes();
@@ -25,26 +25,15 @@ Route::delete('designations/{id}', [DesignationController::class, 'destroy'])->n
  Route::get('job_types', [JobTypeController::class, 'index'])->name('job_types.index');
  Route::post('job_types', [JobTypeController::class, 'store'])->name('job_types.store');
   Route::put('job_types/{id}', [JobTypeController::class, 'update'])->name('job_types.update');
-  Route::delete('job_types/{id}', [JobTypeController::class, 'distroy'])->name('job_types.distroy');
+  Route::delete('job_types/{id}', [JobTypeController::class, 'destroy'])->name('job_types.destroy');
 
 
   //  Jobs Routes
   Route::controller(JobController::class)->group(function () {
-    Route::get('Jobs', 'index')->name('jobs.index');
-    Route::get('/jobs.add', 'add')->name('jobs.add');
-    // Route::post('/users', 'store');
-    // Route::put('/users/{id}', 'update');
-    // Route::delete('/users/{id}', 'destroy');
+    Route::get('jobs', 'index')->name('jobs.index');
+    Route::get('/jobs/create', 'create')->name('jobs.create');
+   
 });
-
-
-    Route::get('/typography', fn() => view('typography'));
-    Route::get('/element', fn() => view('element'));
-    Route::get('/form', fn() => view('form'));
-    Route::get('/table', fn() => view('table'));
-    Route::get('/chart', fn() => view('chart'));
-    Route::get('/404', fn() => view('404'));
-    Route::get('/blank', fn() => view('blank'));
 });
 
 

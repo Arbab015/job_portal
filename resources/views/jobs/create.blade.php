@@ -48,7 +48,7 @@
                 <div class="col-sm-10">
                     <select class="form-select" required aria-label="Default select example">
                         <option value="" selected>Choose any Job Type</option>
-                        @foreach ($jobtype as $id => $type)
+                        @foreach ($jobtypes as $id => $type)
                         <option value="{{ $id }}">{{ $type }}</option>
                         @endforeach
                     </select>
@@ -61,7 +61,7 @@
                 <div class="col-sm-10">
                     <select class="form-select" required aria-label="Default select example">
                         <option value="" selected>Choose any Designation</option>
-                        < @foreach ($designation as $id => $type)
+                        < @foreach ($designations as $id => $type)
                         <option value="{{ $id }}">{{ $type }}</option>
                         @endforeach
                     </select>
