@@ -37,7 +37,7 @@
                         <input type="password" class="form-control" name="password" id="floatingPassword">
                         <label for="floatingPassword">Password</label>
                     </div>
-                    <div class="d-flex align-items-center justify-content-between mb-4">
+                    <div class="d-flex align-items-center justify-content-between mb-4 small">
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" name="remember" id="remember">
                             <label class="form-check-label" for="exampleCheck1">Remember me</label>

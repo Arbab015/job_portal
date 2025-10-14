@@ -11,13 +11,9 @@
     <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    @if ($errors->any())
+    @if (Session::has('error'))
     <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-            @endforeach
-        </ul>
+        {{ Session::get('error') }}
     </div>
     @endif
 
@@ -27,6 +23,7 @@
             <table class="table table-bordered" id="job-types-table">
                 <thead>
                     <tr>
+                        <th>#</th>
                         <th>Job Type</th>
                         <th>Actions</th>
                     </tr>
@@ -39,7 +36,7 @@
 <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form method="POST" class="needs-validation" id="job-types-form">
+            <form method="POST" class="needs-validation" novalidate  id="job_types-form">
                 @csrf
                 <div id="methodField"></div>
 
@@ -50,15 +47,15 @@
 
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>Tob Type</label>
+                      
                         <input type="text" name="title" class="form-control" required placeholder="Enter a new Job Type">
                         <div class="invalid-feedback">Please enter a Job Title.</div>
                     </div>
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-primary " type="submit">Save changes</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                    <button class="btn-soft" type="submit">Save changes</button>
                 </div>
             </form>
         </div>
@@ -70,7 +67,7 @@
 <script>
 $(function() {
     const modal = new bootstrap.Modal(document.getElementById('myModal'));
-    const form = $('#job-types-form');
+    const form = $('#job_types-form');
     const methodField = $('#methodField');
     const nameInput = $('input[name="title"]');
 
@@ -78,7 +75,14 @@ $(function() {
         processing: true,
         serverSide: true,
         ajax: "{{ route('job_types.index') }}",
-        columns: [{
+        columns: [
+             {
+                data: 'serial_no',
+                name: 'serial_no',
+                orderable: false,
+                searchable: false
+            },
+            {
                 data: 'title',
                 name: 'title'
             },
@@ -114,7 +118,7 @@ $(function() {
 
 
     //  form validation check
-    form.on('submit', function(e) {
+   form.on('submit', function(e) {
         if (!this.checkValidity()) {
             e.preventDefault();
             e.stopPropagation();

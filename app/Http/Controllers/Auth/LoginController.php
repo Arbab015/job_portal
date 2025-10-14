@@ -12,9 +12,13 @@ use App\Http\Controllers\Controller;
 
 class LoginController extends Controller
 {
-     public function showLoginForm(){
-           return view('auth.login');
-     }
+    public function showLoginForm()
+    {
+        if (Auth::check()) {
+            return redirect('/dashboard');
+        }
+        return view('auth.login');
+    }
 
     public function login(Request $request)
     {
@@ -23,9 +27,9 @@ class LoginController extends Controller
             'password' => ['required'],
         ]);
 
-       $user = User::where('email', $request->email)->first();
-           $credentials = $request->only('email', 'password');
-           $remember = $request->has('remember');
+        $user = User::where('email', $request->email)->first();
+        $credentials = $request->only('email', 'password');
+        $remember = $request->has('remember');
 
 
         if ($user && Hash::check($request->password, $user->password)) {
@@ -34,17 +38,17 @@ class LoginController extends Controller
             return redirect()->intended('/dashboard');
         }
 
-           return back()->withErrors([
+        return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
-             ])->onlyInput('email');
-    }      
+        ])->onlyInput('email');
+    }
 
     public function logout(Request $request)
-{
-    Auth::logout(); 
-    $request->session()->invalidate();
-    $request->session()->regenerateToken(); 
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
-    return redirect('/')->with('success', 'You have been logged out.'); 
-}
+        return redirect('/')->with('success', 'You have been logged out.');
+    }
 }

@@ -4,18 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Job extends Model
+class JobPost extends Model
 {
     protected $fillable = [
-         'title',
-         'description',
-         'job_type_id',
-         'slug',
-         'designation_id',
-
+        'title',
+        'description',
+        'slug',
+        'job_type_id',
+        'designation_id',
     ];
-
-       public function jobType()
+    public function jobType()
     {
         return $this->belongsTo(JobType::class);
     }

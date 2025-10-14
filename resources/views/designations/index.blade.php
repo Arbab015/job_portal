@@ -11,15 +11,12 @@
     <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    @if ($errors->any())
+    @if (Session::has('error'))
     <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-            @endforeach
-        </ul>
+        {{ Session::get('error') }}
     </div>
     @endif
+
 
     <div class="card">
         <div class="card-header">Designation List</div>
@@ -27,6 +24,7 @@
             <table class="table table-bordered" id="designations-table">
                 <thead>
                     <tr>
+                        <th> #</th>
                         <th>Designation Name</th>
                         <th>Actions</th>
                     </tr>
@@ -51,7 +49,7 @@
 
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>Designation Name</label>
+
                         <input type="text" name="name" class="form-control" required
                             placeholder="Enter a designation name">
                         <div class="invalid-feedback">Please enter a designation name.</div>
@@ -59,8 +57,8 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-primary " type="submit">Save changes</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                    <button class="btn-soft" type="submit">Save changes</button>
                 </div>
             </form>
         </div>
@@ -72,74 +70,79 @@
 
 @push('scripts')
 <script>
-$(function() {
-    const modal = new bootstrap.Modal(document.getElementById('myModal'));
-    const form = $('#designationForm');
-    const methodField = $('#methodField');
-    const nameInput = $('input[name="name"]');
+    $(function() {
+        const modal = new bootstrap.Modal(document.getElementById('myModal'));
+        const form = $('#designationForm');
+        const methodField = $('#methodField');
+        const nameInput = $('input[name="name"]');
 
-    $('#designations-table').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: "{{ route('designations.index') }}",
-        columns: [
-            {
-                data: 'name',
-                name: 'name'
-            },
-            {
-                data: 'actions',
-                name: 'actions',
+        $('#designations-table').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "{{ route('designations.index') }}",
+            columns: [{
+                    data: 'serial_no',
+                    name: 'serial_no',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'name',
+                    name: 'name'
+                },
+                {
+                    data: 'actions',
+                    name: 'actions',
+                    orderable: false,
+                    searchable: false
+                }
+            ]
+        });
+
+        $('#addBtn').on('click', function() {
+            methodField.html('');
+            nameInput.val('');
+            $('#myModalLabel').text('Add Designation');
+            modal.show();
+        });
+
+        $(document).on('click', '.edit-btn', function() {
+            const id = $(this).data('id');
+            const name = $(this).data('name');
+            form.attr('action', '/designations/' + id);
+            methodField.html('<input type="hidden" name="_method" value="PUT">');
+            nameInput.val(name);
+            $('#myModalLabel').text('Edit Designation');
+            modal.show();
+        });
+
+        form.on('submit', function(e) {
+            if (!this.checkValidity()) {
+                e.preventDefault();
+                e.stopPropagation();
             }
-        ]
+            $(this).addClass('was-validated');
+        });
     });
 
-    $('#addBtn').on('click', function() {
-        methodField.html('');
-        nameInput.val('');
-        $('#myModalLabel').text('Add Designation');
-        modal.show();
-    });
+    // sweetalert on delete
+    function confirmDelete(event) {
+        event.preventDefault();
+        var form = event.target.closest('form');
 
-    $(document).on('click', '.edit-btn', function() {
-        const id = $(this).data('id');
-        const name = $(this).data('name');
-     console.log(name)
-        form.attr('action', '/designations/' + id);
-        methodField.html('<input type="hidden" name="_method" value="PUT">');
-        nameInput.val(name);
-        $('#myModalLabel').text('Edit Designation');
-        modal.show();
-    });
-
-    form.on('submit', function(e) {
-        if (!this.checkValidity()) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-        $(this).addClass('was-validated');
-    });
-});
-
-// sweetalert on delete
-function confirmDelete(event) {
-    event.preventDefault();
-    var form = event.target.closest('form');
-
-    Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!"
-    }).then((result) => {
-        if (result.isConfirmed) {
-            form.submit(); 
-        }
-    });
-}
-
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
 </script>
 @endpush
