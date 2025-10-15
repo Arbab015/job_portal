@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('content')
-<div class="designation_area">
+<div class="content_area">
     <div class="d-flex align-items-center justify-content-between mb-4">
         <h2 class="title">Jobs</h2>
 
@@ -25,11 +25,11 @@
     <div class="card">
         <div class="card-header">Jobs list</div>
         <div class="card-body">
-            <table class="table table-bordered" id="jobs-table">
+            <table class="table table-bordered " id="jobs-table">
                 <thead>
                     <tr>
+                        <th>#</th>
                         <th>Title</th>
-                        <th>Slug</th>
                         <th>Job Type</th>
                         <th>Designation</th>
                         <th>Actions</th>
@@ -49,21 +49,30 @@
             processing: true,
             serverSide: true,
             ajax: "{{ route('jobs.index') }}",
+            "columnDefs": [
+                    {
+                        "targets": [1, 2], 
+                        "className": "datatable-wrap-text"
+                    }
+                ],
             columns: [{
-                    data: 'title',
-                    name: 'title'
+                    data: 'serial_no',
+                    name: 'serial_no',
+                    className: 'dt-left',
+                    orderable: false,
+                    searchable: false
                 },
                 {
-                    data: 'slug',
-                    name: 'slug'
+                    data: 'title',
+                    name: 'title',
                 },
                 {
                     data: 'job_type',
-                    name: 'jobType.title'
+                    name: 'job_type_id'
                 },
                 {
                     data: 'designation',
-                    name: 'designation.name'
+                    name: 'designation_id'
                 },
                 {
                     data: 'actions',

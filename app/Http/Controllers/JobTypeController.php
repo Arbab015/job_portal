@@ -6,6 +6,7 @@ use App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\JobType;
 use Exception;
+use Illuminate\Database\QueryException;
 use Yajra\DataTables\Facades\DataTables;
 
 
@@ -14,11 +15,11 @@ class JobTypeController extends Controller
      public function index(Request $request)
      {
           if ($request->ajax()) {
-               return DataTables::of(JobType::query()->orderBy('id', 'desc'))
-                    ->addColumn('serial_no', function(){
-                          static $count= 0;
-                          $count++;
-                          return $count;
+               return DataTables::of(JobType::orderBy('id', 'desc'))
+                    ->addColumn('serial_no', function () {
+                         static $count = 0;
+                         $count++;
+                         return $count;
                     })
                     ->addColumn('actions', function ($JobType) {
 
@@ -67,7 +68,7 @@ class JobTypeController extends Controller
      {
           try {
                $request->validate([
-                    'title' => 'required|string|max:50|unique:job_types,title,',
+                    'title' => 'required|string|max:500|unique:job_types,title,',
                ]);
 
                $jobtype = JobType::findorfail($id);
@@ -86,6 +87,12 @@ class JobTypeController extends Controller
                $jobtype = JobType::findorfail($id);
                $jobtype->delete();
                return redirect()->route('job_types.index')->with('success', 'Job Type deleted successfully. ');
+          } 
+          catch (QueryException $e) {
+               if ($e->getCode() == 23000) {
+                    return redirect()->back()->with('error', 'Cannot delete user as there are related records.');
+               }
+               throw $e;
           } catch (Exception $e) {
                return redirect()->back()->withInput()->with('error', $e->getMessage());
           }

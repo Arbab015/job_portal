@@ -34,9 +34,9 @@ Route::middleware('auth')->group(function () {
     Route::get('jobs', 'index')->name('jobs.index');
     Route::get('/jobs/create', 'create')->name('jobs.create');
     Route::post('/jobs/store', 'store')->name('jobs.store');
-    Route::get('/jobs/edit/{id}', 'edit')->name('jobs.edit');
-    Route::put('/jobs/{id}', 'update')->name('jobs.update');
-    Route::delete('/jobs/{id}', 'destroy')->name('jobs.destroy');
+    Route::get('/jobs/edit/{slug}', 'edit')->name('jobs.edit');
+    Route::put('/jobs/{slug}', 'update')->name('jobs.update');
+    Route::delete('/jobs/{slug}', 'destroy')->name('jobs.destroy');
   });
 });
 

@@ -35,7 +35,8 @@ return new class extends Migration
             $table->dropForeign(['designation_id']);
 
             $table->foreign('job_type_id')
-                  ->references('id')->on('job_types')
+                  ->references('id')
+                  ->on('job_types')
                   ->cascadeOnDelete();
 
             $table->foreign('designation_id')

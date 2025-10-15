@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('content')
-<div class="designation_area">
+<div class="content_area">
     <div class="d-flex align-items-center justify-content-between mb-4">
         <h2 class="title">Designations</h2>
         <button type="button" class="btn btn-primary" id="addBtn">Add</button>
@@ -83,6 +83,7 @@
             columns: [{
                     data: 'serial_no',
                     name: 'serial_no',
+                    className: 'dt-left',
                     orderable: false,
                     searchable: false
                 },

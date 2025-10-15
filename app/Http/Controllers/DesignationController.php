@@ -18,7 +18,7 @@ class DesignationController extends Controller
 
         if ($request->ajax()) {
 
-            return DataTables::of(Designation::query()->orderBy('id', 'desc'))
+            return DataTables::of(Designation::orderBy('id', 'desc'))
                 ->addColumn('serial_no', function(){
                           static $count= 0;
                           $count++;
@@ -88,7 +88,8 @@ class DesignationController extends Controller
             $designation->delete();
 
             return redirect()->route('designations.index')->with('success', 'Designation deleted successfully.');
-        } catch (QueryException $e) {
+        } 
+        catch (QueryException $e) {
             if ($e->getCode() == 23000) { 
                 return back()->with('error', 'Cannot delete record as it is referenced by other records.');
             }

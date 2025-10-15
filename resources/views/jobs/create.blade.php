@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('content')
-<div class="designation_area">
+<div class="content_area">
     <div class="d-flex align-items-center justify-content-between mb-4">
         <h2 class="title">Jobs</h2>
 
