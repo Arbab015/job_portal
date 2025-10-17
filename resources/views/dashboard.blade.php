@@ -8,7 +8,7 @@
                             <i class="fa fa-chart-line fa-3x text-primary"></i>
                             <div class="ms-3">
                                 <p class="mb-2">Jobs</p>
-                                <h6 class="mb-0" id="job_data" data-item ="{{ $total_jobs }} " >{{ $total_jobs }}</h6>
+                                <h6 class="mb-0" id="job_data" data-item ={{  $jobsperyear}}  >{{ $total_jobs }}</h6>
                             </div>
                         </div>
                     </div>
@@ -17,7 +17,7 @@
                             <i class="fa fa-chart-bar fa-3x text-primary"></i>
                             <div class="ms-3">
                                 <p class="mb-2">Job Types</p>
-                                <h6 class="mb-0" id="job_type_data" data-item =" {{ $total_job_types }} ">{{ $total_job_types }} </h6>
+                                <h6 class="mb-0" id="job_type_data" data-item ={{ $jobtypesperyear }}>{{ $total_job_types }} </h6>
                             </div>
                         </div>
                     </div>
@@ -26,7 +26,7 @@
                             <i class="fa fa-chart-area fa-3x text-primary"></i>
                             <div class="ms-3">
                                 <p class="mb-2">Designations</p>
-                                <h6 class="mb-0" id="designation_data" data-item ="{{ $total_designations}} ">{{ $total_designations}}</h6>
+                                <h6 class="mb-0" id="designation_data" data-item ={{ $designationsperyear }}>{{ $total_designations}}</h6>
                             </div>
                         </div>
                     </div>
@@ -41,9 +41,7 @@
                     </div>
                 </div>
             </div>
-
-
-
+            
             <div class="container-fluid pt-4 px-4">
                 <div class="row g-4">
                     <div class="col-sm-12 col-xl-6">

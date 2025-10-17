@@ -68,7 +68,7 @@ class JobTypeController extends Controller
      {
           try {
                $request->validate([
-                    'title' => 'required|string|max:500|unique:job_types,title,',
+                    'title' => 'required|string|max:50|unique:job_types,title,',
                ]);
 
                $jobtype = JobType::findorfail($id);
