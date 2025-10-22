@@ -8,12 +8,14 @@ use App\Models\JobPost;
 use App\Models\JobType;
 use App\Models\Designation;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 
 class JobController extends Controller
 {
     public function index(Request $request)
     {
+        $user = Auth::user();
         if ($request->ajax()) {
             return DataTables::of(JobPost::orderBy('id', 'desc'))
                 ->addColumn('serial_no', function () {
@@ -27,26 +29,32 @@ class JobController extends Controller
                 ->addColumn('designation', function ($jobPost) {
                     return $jobPost->designation ? $jobPost->designation->name : '';
                 })
-                ->addColumn('actions', function ($JobPost) {
-
+                ->addColumn('actions', function ($JobPost) use($user) {
+                    $edit =  "";
+                    $delete = "";
+                    if($user->can('edit_job')){
                     $edit =  '<a href="' . route('jobs.edit', $JobPost->slug) . '">
                         <i class="fa-solid fa-pen-to-square text-primary " role= "button" title="Edit">
                         </i>
                         </a>';
-
+                    }
+                     if($user->can('delete_job')){
                     $delete =  '<form action="' . route('jobs.destroy', $JobPost->slug) . '" method="POST" style="display:inline;">'
                         . csrf_field()
                         . method_field('DELETE')
                         . '<i class="fa-solid fa-trash-can text-danger" role="button" title="Delete" onclick="confirmDelete(event)">
                                 </i>'
                         . '</form>';
+                     }
                     return $edit . ' ' . $delete;
                 })
                 ->rawColumns(['actions'])
                 ->make(true);
         }
-
-        return view('jobs.index');
+      $can_edit = $user->can('edit_job');
+       $can_delete = $user->can('delete_job');
+       $show_actions =  $can_edit ||  $can_delete ;
+        return view('jobs.index', compact('show_actions'));
     }
 
     public function create()
@@ -102,7 +110,9 @@ class JobController extends Controller
             }
 
             return redirect()->back()->with('error', 'No changes detected.');
-        } catch (Exception $e) {
+        } 
+         
+        catch (Exception $e) {
             return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
     }

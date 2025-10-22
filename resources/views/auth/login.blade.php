@@ -46,7 +46,7 @@
                     </div>
                     <button type="submit" class="btn btn-primary py-3 w-100 mb-4">LOGIN</button>
                 </form>
-                <p class="text-center mb-0">Don't have an Account? <a href="register">Sign up</a></p>
+                <p class="text-center mb-0">Don't have an Account? <a href="{{ route('register.get') }}">Sign up</a></p>
             </div>
         </div>
     </div>

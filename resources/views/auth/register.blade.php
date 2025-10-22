@@ -41,7 +41,7 @@
                     </div>
                  
                     <button type="submit" class="btn btn-primary py-3 w-100 mb-4">SIGN UP</button>
-                    <p class="text-center mb-0">Already have an Account? <a href="login">Login</a></p>
+                    <p class="text-center mb-0">Already have an Account? <a href="{{ route('login') }} ">Login</a></p>
 
                 </form>
             </div>

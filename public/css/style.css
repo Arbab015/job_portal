@@ -12,12 +12,7 @@
 }
 
 
-table.dataTable td:nth-child(2),
-table.dataTable td:nth-child(3)
-{
-  word-break: break-all;
-  white-space: pre-line;
-}
+
 .back-to-top {
     position: fixed;
     display: none;

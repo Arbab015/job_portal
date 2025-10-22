@@ -41,7 +41,7 @@
                     </button>
                     
 
-                    <a class="login-back" href="{{ route('login') }}">Back to login</a>
+                    <a class="login-back" href="{{ route('login_form') }}">Back to login</a>
                 </form>
             </div>
         </div>

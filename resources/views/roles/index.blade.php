@@ -3,10 +3,10 @@
 @section('content')
 <div class="content_area">
     <div class="d-flex align-items-center justify-content-between mb-4">
-        <h2 class="title">Jobs</h2>
-         @can('add_job')
-        <a href="{{ route('jobs.create')}}" class="btn btn-primary" id="addBtn" type="button">Add</a>
-          @endcan
+        <h2 class="title">Roles</h2>
+
+        <a href="{{ route('role.create')}}" class="btn btn-primary" id="addBtn" type="button">Create</a>
+
     </div>
 
     @if (session('success'))
@@ -25,16 +25,13 @@
     <div class="card">
         <div class="card-header">Jobs list</div>
         <div class="card-body">
-            <table class="table table-bordered " id="jobs-table">
+            <table class="table table-bordered " id="role_table">
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Title</th>
-                        <th>Job Type</th>
-                        <th>Designation</th>
-                        @if($show_actions)
+                        <th>Name</th>
+                        <th>Permissions</th>
                         <th>Actions</th>
-                        @endif
                     </tr>
                 </thead>
             </table>
@@ -47,10 +44,15 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-        $('#jobs-table').DataTable({
+        $('#role_table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ route('jobs.index') }}",
+            ajax: "{{ route('roles.index') }}",
+            "createdRow": function(row, data) {
+                if (data.name === "Super Admin") {
+                    $(row).hide();
+                }
+            },
             columns: [{
                     data: 'serial_no',
                     name: 'serial_no',
@@ -59,28 +61,23 @@
                     searchable: false
                 },
                 {
-                    data: 'title',
-                    name: 'title',
+                    data: 'name',
+                    name: 'name'
                 },
                 {
-                    data: 'job_type',
-                    name: 'job_type_id'
+                    data: 'permissions',
+                    name: 'permissions'
                 },
-                {
-                    data: 'designation',
-                    name: 'designation_id'
-                },
-                @if($show_actions)
                 {
                     data: 'actions',
-                    name: 'actions',
-                    orderable: false,
-                    searchable: false
-                },
-                @endif
+                    name: 'actions'
+                }
             ]
         });
+
     });
+
+
     // sweetalert on delete
     function confirmDelete(event) {
         event.preventDefault();
@@ -105,10 +102,12 @@
 
 @push('styles')
 <style>
-table.dataTable td:nth-child(2)
+
+table.dataTable td:nth-child(3)
 {
   word-break: break-all;
   white-space: pre-line;
 }
 </style>
+
 @endpush

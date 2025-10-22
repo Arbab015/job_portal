@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\JobType;
 use Exception;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 
 
@@ -14,6 +15,7 @@ class JobTypeController extends Controller
 {
      public function index(Request $request)
      {
+           $user = Auth::user();
           if ($request->ajax()) {
                return DataTables::of(JobType::orderBy('id', 'desc'))
                     ->addColumn('serial_no', function () {
@@ -21,8 +23,10 @@ class JobTypeController extends Controller
                          $count++;
                          return $count;
                     })
-                    ->addColumn('actions', function ($JobType) {
-
+                    ->addColumn('actions', function ($JobType) use ($user) {
+                    $edit =  "";
+                    $delete = "";
+                    if ($user->can('edit_jobtype')) {
                          $edit = '<i class="fa-solid  fa-pen-to-square text-primary edit-btn"
                          role= "button"
                          title="Edit"
@@ -30,7 +34,8 @@ class JobTypeController extends Controller
                                  data-title="' . $JobType->title . '">
                         </i>';
 
-
+                    }
+                     if ($user->can('delete_jobtype')) {
                          $delete =  '<form action="' . route('job_types.destroy', $JobType->id) . '" method="POST" style="display:inline;">'
                               . csrf_field()
                               . method_field('DELETE')
@@ -38,14 +43,18 @@ class JobTypeController extends Controller
                                 </i>'
                               . '</form>';
 
-
+                     }
                          return $edit . ' ' . $delete;
                     })
 
                     ->rawColumns(['actions'])
                     ->make(true);
           }
-          return view('job_types.index');
+            $can_edit = $user->can('edit_jobtype');
+        $can_delete = $user->can('delete_jobtype');
+        $show_actions = $can_edit || $can_delete;
+
+          return view('job_types.index', compact('show_actions'));
      }
 
 

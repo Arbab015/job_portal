@@ -28,8 +28,7 @@ class LoginController extends Controller
         ]);
 
         $user = User::where('email', $request->email)->first();
-        $credentials = $request->only('email', 'password');
-        $remember = $request->has('remember');
+        $request->only('email', 'password');
 
 
         if ($user && Hash::check($request->password, $user->password)) {
@@ -48,7 +47,6 @@ class LoginController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
-        return redirect('/')->with('success', 'You have been logged out.');
+        return redirect()->route('login')->with('success', 'You have been logged out.');
     }
 }

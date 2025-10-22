@@ -87,10 +87,7 @@
             <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
                 <a href="#" class="dropdown-item">My Profile</a>
                 <a href="#" class="dropdown-item">Settings</a>
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn btn-link nav-link">Logout</button>
-                </form>
+                <a href="{{ route('logout') }}"class="dropdown-item">logout</a>
             </div>
         </div>
     </div>

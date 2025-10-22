@@ -1,36 +1,41 @@
 @extends('layouts.master')
-
 @section('content')
 <div class="content_area">
     <div class="d-flex align-items-center justify-content-between mb-4">
-        <h2 class="title">Designations</h2>
-        @can('add_designation')
-        <button type="button" class="btn btn-primary" id="addBtn">Add</button>
-        @endcan
+        <div>
+            <h2 class="title">Users</h2>
+        </div>
+        <div>
+            <button type="button" class="btn btn-primary" id="import_btn">Add</button>
+            <a href="{{ route('users.create') }}" class="btn btn-primary" id="addBtn" type="button">Create</a>
+        </div>
+
     </div>
 
     @if (session('success'))
     <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    @if (Session::has('error'))
+    @if ($errors->any())
     <div class="alert alert-danger">
-        {{ Session::get('error') }}
+        <ul>
+            @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
     </div>
     @endif
-
-
     <div class="card">
-        <div class="card-header">Designation List</div>
+        <div class="card-header">Users list</div>
         <div class="card-body">
-            <table class="table table-bordered" id="designations-table">
+            <table class="table table-bordered " id="users_table">
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Designation Name</th>
-                        @if($show_actions)
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
                         <th>Actions</th>
-                        @endif
                     </tr>
                 </thead>
             </table>
@@ -38,25 +43,24 @@
     </div>
 </div>
 
-
 <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form method="POST" class="needs-validation" novalidate id="designationForm">
+            <form method="POST" class="needs-validation" novalidate id="import_file_form">
                 @csrf
-                <div id="methodField"></div>
 
                 <div class="modal-header">
-                    <h5 class="modal-title" id="myModalLabel"></h5>
+                    <h5 class="modal-title" id="myModalLabel">Import File</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
                 <div class="modal-body">
                     <div class="form-group">
+                        <div class="mb-3">
+                            <label for="csvFile" class="form-label">Upload CSV File</label>
+                            <input class="form-control" type="file" id="csvFile" accept=".csv">
+                        </div>
 
-                        <input type="text" name="name" class="form-control" required
-                            placeholder="Enter a designation name">
-                        <div class="invalid-feedback">Please enter a designation name.</div>
                     </div>
                 </div>
 
@@ -74,16 +78,16 @@
 
 @push('scripts')
 <script>
-    $(function() {
-        const modal = new bootstrap.Modal(document.getElementById('myModal'));
-        const form = $('#designationForm');
-        const methodField = $('#methodField');
-        const nameInput = $('input[name="name"]');
-
-        $('#designations-table').DataTable({
+    $(document).ready(function() {
+        $('#users_table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ route('designations.index') }}",
+            ajax: "{{ route('users.index') }}",
+            "createdRow": function(row, data) {
+                if (data.roles === "Super Admin") {
+                    $(row).hide();
+                }
+            },
             columns: [{
                     data: 'serial_no',
                     name: 'serial_no',
@@ -95,42 +99,24 @@
                     data: 'name',
                     name: 'name'
                 },
-                @if($show_actions)
+                {
+                    data: 'email',
+                    name: 'email'
+                },
+                {
+                    data: 'roles',
+                    name: 'roles'
+                },
                 {
                     data: 'actions',
-                    name: 'actions',
-                    orderable: false,
-                    searchable: false
+                    name: 'actions'
                 }
-                @endif
             ]
         });
 
-        $('#addBtn').on('click', function() {
-            methodField.html('');
-            nameInput.val('');
-            $('#myModalLabel').text('Add Designation');
-            modal.show();
-        });
-
-        $(document).on('click', '.edit-btn', function() {
-            const id = $(this).data('id');
-            const name = $(this).data('name');
-            form.attr('action', '/designations/' + id);
-            methodField.html('<input type="hidden" name="_method" value="PUT">');
-            nameInput.val(name);
-            $('#myModalLabel').text('Edit Designation');
-            modal.show();
-        });
-
-        form.on('submit', function(e) {
-            if (!this.checkValidity()) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-            $(this).addClass('was-validated');
-        });
     });
+
+
 
     // sweetalert on delete
     function confirmDelete(event) {
@@ -151,17 +137,22 @@
             }
         });
     }
+
+    // model show
+
+    $('#import_btn').on('click', function() {
+        const modal = new bootstrap.Modal(document.getElementById('myModal'));
+        modal.show();
+    });
 </script>
 @endpush
 
 @push('styles')
 <style>
-
-table.dataTable td:nth-child(3)
-{
-  word-break: break-all;
-  white-space: pre-line;
-}
+    table.dataTable td:nth-child(2) {
+        word-break: break-all;
+        white-space: pre-line;
+    }
 </style>
 
 @endpush

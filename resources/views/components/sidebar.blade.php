@@ -16,22 +16,40 @@
                          {{ Auth::user()->name}}
                          @endauth
                      </h6>
-                     <span>Admin</span>
+                     <span> @Auth
+                         {{ Auth::user()->roles->pluck('name')->implode(', ')}}
+                         @endauth</span>
                  </div>
              </div>
              <div class="navbar-nav w-100">
+
                  <a href="{{ asset('dashboard') }}" class="nav-item nav-link "><i
                          class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
-
+                 @can('designations_listing')
                  <a href="{{ route('designations.index') }}" class="nav-item nav-link">
                      <i class="fa fa-th me-2"></i>Designations
                  </a>
-                  <a href="{{ route('job_types.index') }}" class="nav-item nav-link">
-                    <i class="fa-solid fa-layer-group"></i> Job Types
+                 @endcan
+                 @can('jobtypes_listing')
+                 <a href="{{ route('job_types.index') }}" class="nav-item nav-link">
+                     <i class="fa-solid fa-layer-group"></i> Job Types
                  </a>
-                   <a href="{{ route('jobs.index') }}" class="nav-item nav-link">
-                    <i class="fa-solid fa-briefcase"></i> Jobs
+                 @endcan
+                 @can('jobs_listing')
+                 <a href="{{ route('jobs.index') }}" class="nav-item nav-link">
+                     <i class="fa-solid fa-briefcase"></i> Jobs
                  </a>
+                 @endcan
+                 @can('Super Admin')
+                 <a href="{{ route('roles.index') }}" class="nav-item nav-link">
+                     <i class="fa-solid fa-person-circle-check"></i> Roles
+                 </a>
+                 @endcan
+                 @can('Super Admin')
+                 <a href="{{ route('users.index') }}" class="nav-item nav-link">
+                     <i class="fa-solid fa-users"></i> Users
+                 </a>
+                 @endcan
 
 
              </div>
