@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\JobTypeController;
 use App\Http\Controllers\JobController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -40,8 +41,20 @@ Route::middleware('auth')->group(function () {
     Route::delete('/jobs/{slug}', 'destroy')->name('jobs.destroy')->middleware('permission:delete_job');
   });
 
+
+  // user profile
+   Route::controller(ProfileController::class)->group(function () {
+
+       Route::get('user/profile', 'index')->name('user.profile');
+       Route::put('user/{id}/update', 'update')->name('profile.update');
+
+
+
+   });  
+
+
   // route work only if role is super admin 
-  Route::middleware('role:Super Admin')->group(function (){
+  Route::middleware('role:Super Admin')->group(function () {
     // Role routes
     Route::controller(RoleController::class)->group(function () {
       Route::get('roles', 'index')->name('roles.index');
@@ -50,16 +63,17 @@ Route::middleware('auth')->group(function () {
       Route::get('role/{id}/edit', 'edit')->name('roles.edit');
       Route::put('role/{id}', 'update')->name('roles.update');
       Route::delete('role/{id}', 'destroy')->name('roles.destroy');
-  });
+    });
     // users routes
     Route::controller(UserController::class)->group(function () {
       Route::get('users', 'index')->name('users.index');
       Route::get('user/create', 'create')->name('users.create');
+      Route::post('users/import', 'import')->name('users.import');
       Route::post('user/store', 'store')->name('users.store');
       Route::get('user/{id}/edit', 'edit')->name('users.edit');
       Route::put('user/{id}', 'update')->name('users.update');
       Route::delete('user/{id}', 'destroy')->name('users.destroy');
-  });;
+    });;
   });
 });
 

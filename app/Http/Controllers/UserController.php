@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ImportUsersCsvJob;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
@@ -47,6 +49,24 @@ class UserController extends Controller
         return view('users.index');
     }
 
+
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|file|mimetypes:text/csv,text/plain,application/csv,application/vnd.ms-excel',
+        ]);
+
+        $file = $request->file('csv_file');
+        $filename =  $file->getClientOriginalName();
+        $path = $file->storeAs('imports', $filename, 'public');
+
+        ImportUsersCsvJob::dispatch(Storage::disk('public')->path($path));
+
+        return back()->with('success', 'User import job queued successfully!');
+    }
+
+
     /**
      * Show the form for creating a new resource.
      */
@@ -84,7 +104,7 @@ class UserController extends Controller
         }
     }
 
-   
+
 
     public function edit(string $id)
     {

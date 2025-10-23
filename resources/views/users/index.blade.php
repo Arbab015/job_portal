@@ -6,7 +6,7 @@
             <h2 class="title">Users</h2>
         </div>
         <div>
-            <button type="button" class="btn btn-primary" id="import_btn">Add</button>
+            <button type="button" class="btn btn-primary" id="import_btn">Import</button>
             <a href="{{ route('users.create') }}" class="btn btn-primary" id="addBtn" type="button">Create</a>
         </div>
 
@@ -46,7 +46,7 @@
 <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form method="POST" class="needs-validation" novalidate id="import_file_form">
+            <form method="POST" action={{ route('users.import') }} enctype="multipart/form-data" class="needs-validation" novalidate id="import_file_form">
                 @csrf
 
                 <div class="modal-header">
@@ -58,7 +58,8 @@
                     <div class="form-group">
                         <div class="mb-3">
                             <label for="csvFile" class="form-label">Upload CSV File</label>
-                            <input class="form-control" type="file" id="csvFile" accept=".csv">
+                            <input class="form-control" type="file" name="csv_file" required id="csvFile" accept=".csv">
+                            <div class="invalid-feedback">Please choose a CSV file.</div>
                         </div>
 
                     </div>
@@ -79,6 +80,7 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
+
         $('#users_table').DataTable({
             processing: true,
             serverSide: true,
@@ -138,8 +140,17 @@
         });
     }
 
-    // model show
 
+    // model form validation
+     const form = $('#import_file_form');
+     form.on('submit', function(e) {
+            if (!this.checkValidity()) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            $(this).addClass('was-validated');
+        });
+    // model show
     $('#import_btn').on('click', function() {
         const modal = new bootstrap.Modal(document.getElementById('myModal'));
         modal.show();
