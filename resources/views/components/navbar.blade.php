@@ -79,7 +79,7 @@
             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                 <img class="rounded-circle me-lg-2"
                     src="{{ Auth::user()->profile_picture
-            ? Storage::url('profile_pictures/' . Auth::user()->profile_picture)
+            ? asset('storage/profile_pictures/' . Auth::user()->profile_picture)
             : asset('img/dummy_user.png') }}"
                     style="width: 40px; height: 40px;">
                 <span class="d-none d-lg-inline-flex">

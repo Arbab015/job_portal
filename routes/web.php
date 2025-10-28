@@ -45,7 +45,7 @@ Route::middleware('auth')->group(function () {
   // user profile
    Route::controller(ProfileController::class)->group(function () {
 
-       Route::get('user/profile', 'index')->name('user.profile');
+       Route::get('user/profile', 'edit')->name('user.profile');
        Route::put('user/{id}/update', 'update')->name('profile.update');
 
 
@@ -69,6 +69,7 @@ Route::middleware('auth')->group(function () {
       Route::get('users', 'index')->name('users.index');
       Route::get('user/create', 'create')->name('users.create');
       Route::post('users/import', 'import')->name('users.import');
+       Route::get('get_progress', 'getPercentage');
       Route::post('user/store', 'store')->name('users.store');
       Route::get('user/{id}/edit', 'edit')->name('users.edit');
       Route::put('user/{id}', 'update')->name('users.update');

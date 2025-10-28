@@ -6,9 +6,10 @@ use App\Jobs\ImportUsersCsvJob;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Redirect;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -17,6 +18,7 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
+
     public function index(Request $request)
     {
         if ($request->ajax()) {
@@ -46,26 +48,38 @@ class UserController extends Controller
                 ->rawColumns(['actions'])
                 ->make(true);
         }
-        return view('users.index');
+        $user = Auth::user();
+        $percentage = $user->percentage;
+        return view('users.index', compact('percentage'));
     }
-
 
 
     public function import(Request $request)
     {
-        $request->validate([
-            'csv_file' => 'required|file|mimetypes:text/csv,text/plain,application/csv,application/vnd.ms-excel',
-        ]);
-
-        $file = $request->file('csv_file');
-        $filename =  $file->getClientOriginalName();
-        $path = $file->storeAs('imports', $filename, 'public');
-
-        ImportUsersCsvJob::dispatch(Storage::disk('public')->path($path));
-
-        return back()->with('success', 'User import job queued successfully!');
+        try {
+            $request->validate([
+                'csv_file' => 'required|file|mimetypes:text/csv,text/plain',
+            ]);
+            $user = Auth::user();
+            $user_id = $user->id;
+            $user_email = User::pluck('email')->toArray();
+            $file = $request->file('csv_file');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('imports', $filename, 'public');
+            ImportUsersCsvJob::dispatch(Storage::disk('public')->path($path), $user_id, $user_email );
+            return back();
+        } catch (Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
     }
-
+    public function getPercentage(Request $request)
+    {
+        $user = Auth::user();
+        $import_progress = $user->percentage;
+        if ($import_progress) {
+            return response()->json(['percentage' => $import_progress]);
+        }
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -127,14 +141,12 @@ class UserController extends Controller
             $validated_data = $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255',
-                'password' => 'required|string|min:8|max:16|confirmed',
                 'role' => 'exists:roles,name',
             ]);
             $user = User::findOrFail($id);
             $user->update([
                 'name' => $validated_data['name'],
                 'email' => $validated_data['email'],
-                'password' => $validated_data['password']
             ]);
             $user->syncRoles($request->role);
             return redirect()->route('users.index')->with('success', 'User updated successfully');

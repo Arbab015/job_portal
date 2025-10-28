@@ -6,6 +6,7 @@
             <h2 class="title">Users</h2>
         </div>
         <div>
+            <span id="import_progress"></span>
             <button type="button" class="btn btn-primary" id="import_btn">Import</button>
             <a href="{{ route('users.create') }}" class="btn btn-primary" id="addBtn" type="button">Create</a>
         </div>
@@ -46,9 +47,8 @@
 <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form method="POST" action={{ route('users.import') }} enctype="multipart/form-data" class="needs-validation" novalidate id="import_file_form">
+            <form method="POST" action="{{ route('users.import') }}" enctype="multipart/form-data" class="needs-validation" novalidate id="import_file_form">
                 @csrf
-
                 <div class="modal-header">
                     <h5 class="modal-title" id="myModalLabel">Import File</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -67,7 +67,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                    <button class="btn-soft" type="submit">Save changes</button>
+                    <button class="btn-soft" id="submitBtn" type="button">Save changes</button>
                 </div>
             </form>
         </div>
@@ -80,7 +80,6 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-
         $('#users_table').DataTable({
             processing: true,
             serverSide: true,
@@ -140,20 +139,53 @@
         });
     }
 
+    $('#import_btn').on('click', function() {
+        modal.show();
+    });
+
 
     // model form validation
-     const form = $('#import_file_form');
-     form.on('submit', function(e) {
-            if (!this.checkValidity()) {
-                e.preventDefault();
-                e.stopPropagation();
+    const form = $('#import_file_form');
+    const modal = new bootstrap.Modal(document.getElementById('myModal'));
+
+    form.on('submit', function(e) {
+        if (!this.checkValidity()) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        $(this).addClass('was-validated');
+    });
+
+
+
+    // to show progress on import csv file
+    function showProgress() {
+        $.ajax({
+            url: 'get_progress',
+            method: 'GET',
+            success: function(response) {
+                if (response.percentage == undefined) {
+                    $('#import_progress').hide();
+                } else {
+                    $('#import_progress')
+                        .text('Import Progress: ' + response.percentage + '%')
+                        .show();
+                }
+            },
+            error: function() {
+                $('#import_progress').text('Error ');
             }
-            $(this).addClass('was-validated');
         });
-    // model show
-    $('#import_btn').on('click', function() {
-        const modal = new bootstrap.Modal(document.getElementById('myModal'));
-        modal.show();
+
+    }
+    setInterval(showProgress, 200);
+
+    const myButton = document.getElementById('submitBtn');
+    const progress = document.getElementById('import_progress');
+    myButton.addEventListener('click', function(event) {
+        form.submit();
+        modal.hide();
+        progress.context("Import start")
     });
 </script>
 @endpush

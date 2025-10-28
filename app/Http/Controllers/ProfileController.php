@@ -7,17 +7,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Role as ModelsRole;
 
 class ProfileController extends Controller
 {
-    public function index()
+    public function edit()
     {
 
         $user = Auth::user();
         return view(
-            'profile.index',
+            'profile.edit',
             [
                 'user' => $user,
             ]
@@ -42,27 +40,27 @@ class ProfileController extends Controller
             ]);
         }
 
-    if ($request->hasFile('profile_picture')) {
-    $old_file_path = 'profile_pictures/' . $user->profile_picture;
+        if ($request->hasFile('profile_picture')) {
+            $old_file_path = 'profile_pictures/' . $user->profile_picture;
 
-    if ($user->profile_picture && Storage::disk('public')->exists($old_file_path)) {
-        Storage::disk('public')->delete($old_file_path);
-    }
+            if ($user->profile_picture && Storage::disk('public')->exists($old_file_path)) {
+                Storage::disk('public')->delete($old_file_path);
+            }
 
-    $image = $request->file('profile_picture');
-    $image_name = time() . '_' . $image->getClientOriginalName();
+            $image = $request->file('profile_picture');
+            $image_name = time() . '_' . $image->getClientOriginalName();
 
-    // Save new image using Storage
-    $image->storeAs('profile_pictures', $image_name, 'public');
+            // Save new image using Storage
+            $image->storeAs('profile_pictures', $image_name, 'public');
 
-    $validated_data['profile_picture'] = $image_name;
-}
+            $validated_data['profile_picture'] = $image_name;
+        }
 
-$user->update([
-    'name' => $validated_data['name'],
-    'email' => $validated_data['email'],
-    'profile_picture' => $validated_data['profile_picture'] ?? $user->profile_picture,
-]);
+        $user->update([
+            'name' => $validated_data['name'],
+            'email' => $validated_data['email'],
+            'profile_picture' => $validated_data['profile_picture'] ?? $user->profile_picture,
+        ]);
 
         return redirect()->back()->with('success', 'User updated successfully');
     }
