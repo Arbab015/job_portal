@@ -58,7 +58,7 @@ class DesignationController extends Controller
         $can_delete = $user->can('delete_designation');
         $show_actions = $can_edit || $can_delete;
 
-        return view('designations.index', compact('show_actions'));
+        return view('backend.designations.index', compact('show_actions'));
     }
 
     public function store(Request $request)

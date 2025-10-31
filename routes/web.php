@@ -11,12 +11,14 @@ use App\Http\Controllers\JobController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ChatBoxController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 
 // Auth::routes();
 Route::middleware('auth')->group(function () {
-  Route::get('/', [DashboardController::class, 'index'])->middleware('permission:dashboard');
   Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('permission:dashboard');
 
   // Designation Routes 
@@ -43,14 +45,10 @@ Route::middleware('auth')->group(function () {
 
 
   // user profile
-   Route::controller(ProfileController::class)->group(function () {
-
-       Route::get('user/profile', 'edit')->name('user.profile');
-       Route::put('user/{id}/update', 'update')->name('profile.update');
-
-
-
-   });  
+  Route::controller(ProfileController::class)->group(function () {
+    Route::get('user/profile', 'edit')->name('user.profile');
+    Route::put('user/{id}/update', 'update')->name('profile.update');
+  });
 
 
   // route work only if role is super admin 
@@ -69,12 +67,24 @@ Route::middleware('auth')->group(function () {
       Route::get('users', 'index')->name('users.index');
       Route::get('user/create', 'create')->name('users.create');
       Route::post('users/import', 'import')->name('users.import');
-       Route::get('get_progress', 'getPercentage');
+      Route::get('get_progress', 'getPercentage');
       Route::post('user/store', 'store')->name('users.store');
       Route::get('user/{id}/edit', 'edit')->name('users.edit');
       Route::put('user/{id}', 'update')->name('users.update');
       Route::delete('user/{id}', 'destroy')->name('users.destroy');
     });;
+  });
+
+
+  // Notification routes
+  Route::controller(NotificationController::class)->group(function () {
+    Route::post('notification/read/{id?}', 'markAsRead')->name('notification.read');
+    Route::post('notification/delete/{id?}', 'destroy')->name('notification.delete');
+  });
+
+  // chatbox routes
+  Route::controller(ChatBoxController::class)->group(function () {
+    Route::get('chatbox', 'show')->name('chatbox.chat');
   });
 });
 
@@ -91,3 +101,16 @@ Route::post('forgot_password', [ForgetPasswordController::class, 'sendResetEmail
 // Route::get('/reset_password', fn() => view('reset_password'));
 // Route::get('reset_password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('reset_password', [ResetPasswordController::class, 'store'])->name('password.store');
+
+
+
+// for front end
+Route::controller(HomeController::class)->group(function () {
+  Route::get('/', 'index')->name('home.index');
+  Route::get('home', 'index')->name('home.index');
+  Route::get('about', 'aboutIndex')->name('about.index');
+  Route::get('shop', 'shopIndex')->name('shop.index');
+  Route::get('shop-single', 'shopSingleIndex')->name('shop-single.index');
+
+  Route::get('contact', 'contactIndex')->name('contact.index');
+});

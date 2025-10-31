@@ -54,7 +54,7 @@ class JobController extends Controller
       $can_edit = $user->can('edit_job');
        $can_delete = $user->can('delete_job');
        $show_actions =  $can_edit ||  $can_delete ;
-        return view('jobs.index', compact('show_actions'));
+        return view('backend.jobs.index', compact('show_actions'));
     }
 
     public function create()
@@ -62,7 +62,7 @@ class JobController extends Controller
         $jobtypes = JobType::pluck('title', 'id');
         $designations = Designation::pluck('name', 'id');
 
-        return view('jobs.create', compact('jobtypes', 'designations'));
+        return view('backend.jobs.create', compact('jobtypes', 'designations'));
     }
 
     public function store(Request $request)
@@ -88,7 +88,7 @@ class JobController extends Controller
         $jobtypes = JobType::pluck('title', 'ID');
         $designations = Designation::pluck('name', 'ID');
         $job_post = JobPost::where('slug', $slug)->firstOrFail();
-        return view('jobs.edit', compact('jobtypes', 'designations', 'job_post'));
+        return view('backend.jobs.edit', compact('jobtypes', 'designations', 'job_post'));
     }
 
     public function update(Request $request, $slug)

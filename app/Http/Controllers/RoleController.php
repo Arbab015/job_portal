@@ -39,12 +39,12 @@ class RoleController extends Controller
                 ->make(true);
         }
 
-        return view("roles.index");
+        return view("backend.roles.index");
     }
     public function create()
     {
         $permissions = Permission::orderBy('name', 'asc')->get();
-        return view("roles.create", [
+        return view("backend.roles.create", [
             'permissions' => $permissions
         ]);
     }
@@ -73,7 +73,7 @@ class RoleController extends Controller
             $has_permissions = $role->permissions->pluck('name');
             $permissions = Permission::orderBy('name', 'asc')->get();
             return view(
-                'roles.edit',
+                'backend.roles.edit',
                 [
                     'has_permissions' => $has_permissions,
                     'permissions' => $permissions,

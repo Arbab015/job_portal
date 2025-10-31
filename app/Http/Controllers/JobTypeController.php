@@ -54,7 +54,7 @@ class JobTypeController extends Controller
         $can_delete = $user->can('delete_jobtype');
         $show_actions = $can_edit || $can_delete;
 
-          return view('job_types.index', compact('show_actions'));
+          return view('backend.job_types.index', compact('show_actions'));
      }
 
 

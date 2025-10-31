@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\ImportUsersCsvJob;
 use App\Models\User;
+use App\Notifications\ProfileUpdateNotification;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -50,7 +51,7 @@ class UserController extends Controller
         }
         $user = Auth::user();
         $percentage = $user->percentage;
-        return view('users.index', compact('percentage'));
+        return view('backend.users.index', compact('percentage'));
     }
 
 
@@ -66,7 +67,7 @@ class UserController extends Controller
             $file = $request->file('csv_file');
             $filename = time() . '_' . $file->getClientOriginalName();
             $path = $file->storeAs('imports', $filename, 'public');
-            ImportUsersCsvJob::dispatch(Storage::disk('public')->path($path), $user_id, $user_email );
+            ImportUsersCsvJob::dispatch(Storage::disk('public')->path($path), $user_id, $user_email);
             return back();
         } catch (Exception $e) {
             return back()->with('error', $e->getMessage());
@@ -87,7 +88,7 @@ class UserController extends Controller
     public function create()
     {
         $roles = Role::where('name', '!=', 'Super Admin')->orderBy('name', 'desc')->get();
-        return view('users.create', [
+        return view('backend.users.create', [
             'roles' => $roles
         ]);
     }
@@ -117,15 +118,12 @@ class UserController extends Controller
             return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
     }
-
-
-
     public function edit(string $id)
     {
         $user = User::findOrFail($id);
         $roles = Role::where('name', '!=', 'Super Admin')->orderBy('name', 'desc')->get();
         $hasroles = $user->roles->pluck('name');
-        return view('users.edit', [
+        return view('backend.users.edit', [
             'roles' => $roles,
             'user' => $user,
             'hasroles' => $hasroles
@@ -141,13 +139,35 @@ class UserController extends Controller
             $validated_data = $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255',
-                'role' => 'exists:roles,name',
+                'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
             ]);
             $user = User::findOrFail($id);
+            $change_type = [];
+            if ($request->hasFile('profile_picture')) {
+                $old_file_path = 'profile_pictures/' . $user->profile_picture;
+                if ($user->profile_picture && Storage::disk('public')->exists($old_file_path)) {
+                    Storage::disk('public')->delete($old_file_path);
+                }
+                $image = $request->file('profile_picture');
+                $image_name = time() . '_' . $image->getClientOriginalName();
+
+                // Save new image using Storage
+                $image->storeAs('profile_pictures', $image_name, 'public');
+                $validated_data['profile_picture'] = $image_name;
+                $change_type[] = 'profile picture';
+            }
+            if ($request->filled('name') && $validated_data['name'] !== $user->name) {
+                $change_type[] = 'name';
+            }
             $user->update([
                 'name' => $validated_data['name'],
                 'email' => $validated_data['email'],
+                'profile_picture' => $validated_data['profile_picture']
             ]);
+
+            if(!empty($change_type)) {
+                 $user->notify(new ProfileUpdateNotification($user ,  $change_type));
+            }
             $user->syncRoles($request->role);
             return redirect()->route('users.index')->with('success', 'User updated successfully');
         } catch (Exception $e) {

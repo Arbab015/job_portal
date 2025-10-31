@@ -1,4 +1,4 @@
-@extends('layouts.master', ['hideComponent' => TRUE] )
+@extends('backend.layouts.master', ['hideComponent' => TRUE] )
 @section('content')
 <div class="container-new">
     <div class="row h-100 align-items-center justify-content-center" style="min-height: 100vh;">
