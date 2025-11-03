@@ -52,6 +52,11 @@
                      <i class="fa-solid fa-users"></i> Users
                  </a>
                  @endcan
+                  @can('Super Admin')
+                 <a href="{{ route('applicants.index') }}" class="nav-item nav-link">
+                     <i class="fa-solid fa-users"></i> Applicants
+                 </a>
+                 @endcan
              </div>
      </div>
      </nav>

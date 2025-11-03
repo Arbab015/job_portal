@@ -185,7 +185,6 @@
     myButton.addEventListener('click', function(event) {
         form.submit();
         modal.hide();
-        progress.context("Import start")
     });
 </script>
 @endpush

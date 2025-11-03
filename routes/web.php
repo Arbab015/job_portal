@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\ApplicantController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
@@ -62,6 +63,7 @@ Route::middleware('auth')->group(function () {
       Route::put('role/{id}', 'update')->name('roles.update');
       Route::delete('role/{id}', 'destroy')->name('roles.destroy');
     });
+    
     // users routes
     Route::controller(UserController::class)->group(function () {
       Route::get('users', 'index')->name('users.index');
@@ -72,7 +74,13 @@ Route::middleware('auth')->group(function () {
       Route::get('user/{id}/edit', 'edit')->name('users.edit');
       Route::put('user/{id}', 'update')->name('users.update');
       Route::delete('user/{id}', 'destroy')->name('users.destroy');
-    });;
+    });
+
+    // applicants routes
+    Route::controller(ApplicantController::class)->group(function () {
+    Route::get('applicants', 'index')->name('applicants.index');
+
+    });
   });
 
 
@@ -113,4 +121,7 @@ Route::controller(HomeController::class)->group(function () {
   Route::get('shop-single', 'shopSingleIndex')->name('shop-single.index');
 
   Route::get('contact', 'contactIndex')->name('contact.index');
+  Route::get('job/detail/{slug}', 'jobsDetail')->name('jobs.detail');
+   Route::get('jobs/view-all', 'jobsViewAll')->name('jobs.viewall');
+  Route::post('job/apply', 'jobApply')->name('job.apply');
 });

@@ -29,31 +29,31 @@ class JobController extends Controller
                 ->addColumn('designation', function ($jobPost) {
                     return $jobPost->designation ? $jobPost->designation->name : '';
                 })
-                ->addColumn('actions', function ($JobPost) use($user) {
+                ->addColumn('actions', function ($JobPost) use ($user) {
                     $edit =  "";
                     $delete = "";
-                    if($user->can('edit_job')){
-                    $edit =  '<a href="' . route('jobs.edit', $JobPost->slug) . '">
+                    if ($user->can('edit_job')) {
+                        $edit =  '<a href="' . route('jobs.edit', $JobPost->slug) . '">
                         <i class="fa-solid fa-pen-to-square text-primary " role= "button" title="Edit">
                         </i>
                         </a>';
                     }
-                     if($user->can('delete_job')){
-                    $delete =  '<form action="' . route('jobs.destroy', $JobPost->slug) . '" method="POST" style="display:inline;">'
-                        . csrf_field()
-                        . method_field('DELETE')
-                        . '<i class="fa-solid fa-trash-can text-danger" role="button" title="Delete" onclick="confirmDelete(event)">
+                    if ($user->can('delete_job')) {
+                        $delete =  '<form action="' . route('jobs.destroy', $JobPost->slug) . '" method="POST" style="display:inline;">'
+                            . csrf_field()
+                            . method_field('DELETE')
+                            . '<i class="fa-solid fa-trash-can text-danger" role="button" title="Delete" onclick="confirmDelete(event)">
                                 </i>'
-                        . '</form>';
-                     }
+                            . '</form>';
+                    }
                     return $edit . ' ' . $delete;
                 })
                 ->rawColumns(['actions'])
                 ->make(true);
         }
-      $can_edit = $user->can('edit_job');
-       $can_delete = $user->can('delete_job');
-       $show_actions =  $can_edit ||  $can_delete ;
+        $can_edit = $user->can('edit_job');
+        $can_delete = $user->can('delete_job');
+        $show_actions =  $can_edit ||  $can_delete;
         return view('backend.jobs.index', compact('show_actions'));
     }
 
@@ -68,14 +68,16 @@ class JobController extends Controller
     public function store(Request $request)
     {
         try {
-
+           
             $validated_data =  $request->validate([
                 'title' => 'required|string|max:50',
                 'slug' => 'required|string|max:50|unique:job_posts',
                 'description' => 'required',
                 'job_type_id' => 'required|string',
                 'designation_id' => 'required|string',
+                'due_date' => 'required|date',
             ]);
+           
             JobPost::create($validated_data);
             return redirect()->route('jobs.index')->with('success', 'Job added successfully.');
         } catch (Exception $e) {
@@ -110,9 +112,7 @@ class JobController extends Controller
             }
 
             return redirect()->back()->with('error', 'No changes detected.');
-        } 
-         
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
     }

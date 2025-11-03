@@ -12,6 +12,7 @@ class JobPost extends Model
         'slug',
         'job_type_id',
         'designation_id',
+        'due_date'
     ];
     public function jobType()
     {
@@ -21,5 +22,10 @@ class JobPost extends Model
     public function designation()
     {
         return $this->belongsTo(Designation::class);
+    }
+    
+    public function applicant()
+    {
+        return $this->hasMany(Applicant::class);
     }
 }

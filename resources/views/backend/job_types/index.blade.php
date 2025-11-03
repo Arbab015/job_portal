@@ -89,8 +89,7 @@
                     data: 'title',
                     name: 'title'
                 },
-                @if($show_actions) 
-                {
+                @if($show_actions) {
                     data: 'actions',
                     name: 'actions',
                     orderable: false,
@@ -156,12 +155,10 @@
 
 @push('styles')
 <style>
-
-table.dataTable td:nth-child(2)
-{
-  word-break: break-all;
-  white-space: pre-line;
-}
+    table.dataTable td:nth-child(2) {
+        word-break: break-all;
+        white-space: pre-line;
+    }
 </style>
 
 @endpush

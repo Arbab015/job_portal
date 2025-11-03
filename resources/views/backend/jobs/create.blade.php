@@ -4,8 +4,6 @@
 <div class="content_area">
     <div class="d-flex align-items-center justify-content-between mb-4">
         <h2 class="title">Jobs</h2>
-
-
     </div>
 
     @if (session('success'))
@@ -66,19 +64,27 @@
                         <div class="invalid-feedback">Please select Designation.</div>
                     </div>
                 </div>
-
-
             </div>
-
-            <div class="form-group col-6 py-2">
-                <label for="description" class="col  fw-bolder ">Description: </label>
-                <div class="col-sm-10">
-                    <textarea class="form-control" id="exampleFormControlTextarea1" required name="description" rows="3"
-                        placeholder="Enter your Job description"></textarea>
-                    <div class="invalid-feedback">Please enter a Job Description.</div>
+            <div class="row">
+                <div class="form-group col-6 py-2">
+                    <label for="description" class="col  fw-bolder ">Description: </label>
+                    <div class="col-sm-10">
+                        <textarea class="form-control" id="exampleFormControlTextarea1" required name="description" rows="3"
+                            placeholder="Enter your Job description"></textarea>
+                        <div class="invalid-feedback">Please enter a Job Description.</div>
+                    </div>
                 </div>
-            </div>
 
+                 <div class="form-group col-6 py-2">
+                    <label for="description" class="col  fw-bolder ">Due Date: </label>
+                    <div class="col-sm-10">
+                        <input type="date" class="form-control" required name="due_date" id="due_date">
+                        <div class="invalid-feedback">Please select due date.</div>
+                    </div>
+                </div>
+
+
+            </div>
 
             <div class="form-group py-3">
                 <button type="submit" class="btn btn-primary">Save changes</button>
