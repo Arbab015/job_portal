@@ -28,7 +28,9 @@
                         <th>Name</th>
                         <th>Phone</th>
                         <th>Email</th>
-                        <th>Skill</th>
+                        <th>Job Title</th>
+                        <th>Skills</th>
+                        <th>File</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -52,25 +54,29 @@
                     name: 'name',
                 },
                 {
+                    data: 'mobile_no',
+                    name: 'mobile_no'
+                },
+                {
                     data: 'email',
                     name: 'email'
                 },
                 {
-                    data: 'mobile_no',
-                    name: 'mobile_no'
+                    data: 'job',
+                    name: 'job_id'
                 },
                 {
                     data: 'skills',
                     name: 'skills'
                 },
-                {
-                    data: 'CV_file',
-                    name: 'CV_file'
-                },
 
                 {
+                    data: 'file',
+                    name: 'file'
+                },
+                {
                     data: 'status',
-                    name: 'status'
+                    name: 'status',
                 },
                 {
                     data: 'actions',
@@ -81,6 +87,40 @@
             ]
         });
     });
+
+    function confirmAccept(event) {
+        event.preventDefault();
+        var form = event.target.closest('form');
+        Swal.fire({
+            title: "Are you sure?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, Approve!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+
+     function confirmReject(event) {
+        event.preventDefault();
+        var form = event.target.closest('form');
+        Swal.fire({
+            title: "Are you sure?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, Reject!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
 </script>
 @endpush
 

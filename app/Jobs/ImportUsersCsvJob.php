@@ -38,6 +38,7 @@ class ImportUsersCsvJob implements ShouldQueue
      */
     public function handle(): void
     {
+        logger('ewwwwwwwwww');
         try {
             $user = User::findOrFail($this->user_id);
             Log::info("Import started: {$this->path}");

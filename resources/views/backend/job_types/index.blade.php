@@ -3,7 +3,7 @@
 @section('content')
 <div class="content_area">
     <div class="d-flex align-items-center justify-content-between mb-4">
-        <h2 class="title">Job Types</h2>
+        <h4 class="title">Job Types</h4>
         @can('add_jobtype')
         <button type="button" class="btn btn-primary" id="addBtn">Add</button>
         @endcan

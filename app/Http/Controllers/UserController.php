@@ -61,6 +61,7 @@ class UserController extends Controller
             $request->validate([
                 'csv_file' => 'required|file|mimetypes:text/csv,text/plain',
             ]);
+            
             $user = Auth::user();
             $user_id = $user->id;
             $user_email = User::pluck('email')->toArray();

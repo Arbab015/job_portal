@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Auth\ApplicantController;
+use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
@@ -63,7 +63,7 @@ Route::middleware('auth')->group(function () {
       Route::put('role/{id}', 'update')->name('roles.update');
       Route::delete('role/{id}', 'destroy')->name('roles.destroy');
     });
-    
+
     // users routes
     Route::controller(UserController::class)->group(function () {
       Route::get('users', 'index')->name('users.index');
@@ -78,11 +78,12 @@ Route::middleware('auth')->group(function () {
 
     // applicants routes
     Route::controller(ApplicantController::class)->group(function () {
-    Route::get('applicants', 'index')->name('applicants.index');
-
+      Route::get('applicants', 'index')->name('applicants.index');
+      Route::get('applicants/download/{id}', 'download')->name('file.download');
+      Route::post('applicants/accepted/{id}', 'statusAccept')->name('status.accept');
+      Route::post('applicants/rejected/{id}', 'statusReject')->name('status.reject');
     });
   });
-
 
   // Notification routes
   Route::controller(NotificationController::class)->group(function () {
@@ -110,18 +111,12 @@ Route::post('forgot_password', [ForgetPasswordController::class, 'sendResetEmail
 // Route::get('reset_password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('reset_password', [ResetPasswordController::class, 'store'])->name('password.store');
 
-
-
 // for front end
 Route::controller(HomeController::class)->group(function () {
   Route::get('/', 'index')->name('home.index');
   Route::get('home', 'index')->name('home.index');
-  Route::get('about', 'aboutIndex')->name('about.index');
-  Route::get('shop', 'shopIndex')->name('shop.index');
-  Route::get('shop-single', 'shopSingleIndex')->name('shop-single.index');
-
   Route::get('contact', 'contactIndex')->name('contact.index');
   Route::get('job/detail/{slug}', 'jobsDetail')->name('jobs.detail');
-   Route::get('jobs/view-all', 'jobsViewAll')->name('jobs.viewall');
+  Route::get('jobs-all', 'jobsViewAll')->name('jobs.all');
   Route::post('job/apply', 'jobApply')->name('job.apply');
 });

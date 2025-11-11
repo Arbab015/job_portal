@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\JobPost;
 use App\Models\JobType;
@@ -68,16 +67,16 @@ class JobController extends Controller
     public function store(Request $request)
     {
         try {
-           
             $validated_data =  $request->validate([
                 'title' => 'required|string|max:50',
                 'slug' => 'required|string|max:50|unique:job_posts',
                 'description' => 'required',
                 'job_type_id' => 'required|string',
+                'address' => 'required|string',
                 'designation_id' => 'required|string',
                 'due_date' => 'required|date',
             ]);
-           
+
             JobPost::create($validated_data);
             return redirect()->route('jobs.index')->with('success', 'Job added successfully.');
         } catch (Exception $e) {
@@ -87,8 +86,8 @@ class JobController extends Controller
 
     public function edit($slug)
     {
-        $jobtypes = JobType::pluck('title', 'ID');
-        $designations = Designation::pluck('name', 'ID');
+        $jobtypes = JobType::pluck('title');
+        $designations = Designation::pluck('name');
         $job_post = JobPost::where('slug', $slug)->firstOrFail();
         return view('backend.jobs.edit', compact('jobtypes', 'designations', 'job_post'));
     }
@@ -99,6 +98,7 @@ class JobController extends Controller
             $validated_data = $request->validate([
                 'title' => 'required|string|max:50',
                 'description' => 'required',
+                'address' => 'required|string',
                 'job_type_id' => 'required|string|exists:job_types,id',
                 'designation_id' => 'required|string|exists:designations,id'
             ]);

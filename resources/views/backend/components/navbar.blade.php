@@ -143,9 +143,9 @@
     </div>
 </div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+@push('scripts')
 <script>
-    $(document).ready(function() {
         // for read notification and read all notification
         $('.read-btn').on('click', function(e) {
             e.preventDefault();
@@ -219,28 +219,11 @@
                 });
 
         });
-
-    });
-
-    // sweet alert on delete
-    function confirmDelete(event) {
-        event.preventDefault();
-
-        Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                form.submit();
-            }
-        });
-    }
+  
 </script>
+@endpush
+
+@push('styles')
 <style>
     .notification_header {
         background-color: rgb(202 221 248) !important;
@@ -254,3 +237,4 @@
         background-color: #b2c0d0 !important;
     }
 </style>
+@endpush

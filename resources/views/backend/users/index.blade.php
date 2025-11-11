@@ -3,7 +3,7 @@
 <div class="content_area">
     <div class="d-flex align-items-center justify-content-between mb-4">
         <div>
-            <h2 class="title">Users</h2>
+            <h4 class="title">Users</h4>
         </div>
         <div>
             <span id="import_progress"></span>
@@ -57,7 +57,7 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <div class="mb-3">
-                            <label for="csvFile" class="form-label">Upload CSV File</label>
+                            <label for="csv_file" class="form-label">Upload CSV File</label>
                             <input class="form-control" type="file" name="csv_file" required id="csvFile" accept=".csv">
                             <div class="invalid-feedback">Please choose a CSV file.</div>
                         </div>

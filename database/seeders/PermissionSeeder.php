@@ -36,7 +36,7 @@ class PermissionSeeder extends Seeder
             Permission::firstOrCreate(['name' => $permission]);
         }
         Role::firstOrCreate(['name' => 'Super Admin']);
-        $user = User::first(); 
+       $user = User::where('email', 'arbabr42@gmail.com')->first();
         if ($user) {
             $user->assignRole(roles: 'Super Admin');
         }

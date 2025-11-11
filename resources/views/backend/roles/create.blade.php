@@ -3,7 +3,7 @@
 @section('content')
 <div class="content_area">
     <div class="d-flex align-items-center justify-content-between mb-4">
-        <h2 class="title">Role / Create</h2>
+        <h4 class="title">Role / Create</h4>
 
 
     </div>

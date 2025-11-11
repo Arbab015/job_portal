@@ -3,7 +3,7 @@
 @section('content')
 <div class="content_area">
     <div class="d-flex align-items-center justify-content-between mb-4">
-        <h2 class="title">User / Edit</h2>
+        <h4 class="title">User / Edit</h4>
     </div>
 
     @if (session('success'))

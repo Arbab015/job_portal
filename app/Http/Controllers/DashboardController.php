@@ -44,6 +44,6 @@ class DashboardController extends Controller
     $total_jobs = JobPost::count();
     $total_job_types = JobType::count();
     $total_designations = Designation::count();
-    return view('dashboard', compact('total_jobs', 'total_job_types', 'total_designations', 'jobsperyear', 'jobtypesperyear', 'designationsperyear'));
+    return view('backend.dashboard', compact('total_jobs', 'total_job_types', 'total_designations', 'jobsperyear', 'jobtypesperyear', 'designationsperyear'));
   }
 }

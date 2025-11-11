@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class JobPost extends Model
 {
@@ -12,7 +13,8 @@ class JobPost extends Model
         'slug',
         'job_type_id',
         'designation_id',
-        'due_date'
+        'due_date',
+        'address'
     ];
     public function jobType()
     {
@@ -24,8 +26,9 @@ class JobPost extends Model
         return $this->belongsTo(Designation::class);
     }
     
-    public function applicant()
+    
+     public function applicant(): BelongsToMany
     {
-        return $this->hasMany(Applicant::class);
+      return $this->belongsToMany(Applicant::class, 'applicant_jobs', 'job_id', 'applicant_id');
     }
 }

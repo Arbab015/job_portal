@@ -3,7 +3,7 @@
 @section('content')
 <div class="content_area">
     <div class="d-flex align-items-center justify-content-between mb-4">
-        <h2 class="title">Jobs</h2>
+        <h4 class="title">Jobs</h4>
     </div>
 
     @if (session('success'))
@@ -51,13 +51,12 @@
                         <div class="invalid-feedback">Please select job type.</div>
                     </div>
                 </div>
-
                 <div class="form-group col-6 py-2">
                     <label for="Job-Type" class="col fw-bolder ">Designation: </label>
                     <div class="col-sm-10">
                         <select class="form-select" required aria-label="Default select example" name="designation_id">
                             <option value="" selected>Choose any Designation</option>
-                            < @foreach ($designations as $id=> $type)
+                            <@foreach ($designations as $id=> $type)
                                 <option value="{{ $id }}">{{ $type }}</option>
                                 @endforeach
                         </select>
@@ -67,15 +66,13 @@
             </div>
             <div class="row">
                 <div class="form-group col-6 py-2">
-                    <label for="description" class="col  fw-bolder ">Description: </label>
+                    <label for="description" class="col  fw-bolder ">Location: </label>
                     <div class="col-sm-10">
-                        <textarea class="form-control" id="exampleFormControlTextarea1" required name="description" rows="3"
-                            placeholder="Enter your Job description"></textarea>
-                        <div class="invalid-feedback">Please enter a Job Description.</div>
+                        <input type="text" class="form-control" required name="address" placeholder="Enter location">
+                        <div class="invalid-feedback">Please enter location.</div>
                     </div>
                 </div>
-
-                 <div class="form-group col-6 py-2">
+                <div class="form-group col-6 py-2">
                     <label for="description" class="col  fw-bolder ">Due Date: </label>
                     <div class="col-sm-10">
                         <input type="date" class="form-control" required name="due_date" id="due_date">
@@ -83,9 +80,15 @@
                     </div>
                 </div>
 
-
             </div>
-
+            <div class="form-group  py-2" >
+                <label for="description" class="col  fw-bolder ">Description: </label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" id="job_description" required name="description"
+                        placeholder="Enter your Job description"></textarea>
+                    <div class="invalid-feedback">Please enter a Job Description.</div>
+                </div>
+            </div>
             <div class="form-group py-3">
                 <button type="submit" class="btn btn-primary">Save changes</button>
             </div>
@@ -96,10 +99,9 @@
 </div>
 @endsection
 
-
 @push('scripts')
-
 <script>
+    CKEDITOR.replace('job_description');
     const form = $('#jobs_form');
     //  form validation check
     form.on('submit', function(e) {
@@ -110,13 +112,10 @@
         $(this).addClass('was-validated');
     });
 
-
-
     function generateSlug() {
         const titleInput = document.getElementById('title');
         const slugInput = document.getElementById('slug');
         const title = titleInput.value;
-
         const slug = title
             .toLowerCase()
             .replace(/\s+/g, '-')
