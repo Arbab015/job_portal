@@ -11,7 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::rename('applicant__jobs', 'applicant_jobs');
+        Schema::create('job_applicants', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('job_id')
+                ->constrained('job_posts')
+                ->cascadeOnDelete();
+            $table->morphs('applicant');
+            $table->timestamps();
+        });
     }
 
     /**
@@ -19,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        
+        Schema::dropIfExists('job_applicants');
     }
 };

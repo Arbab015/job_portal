@@ -23,9 +23,10 @@
         <div class="card-header">Job Types List</div>
         <div class="card-body">
             <table class="table table-bordered" id="job-types-table">
+                <button class="btn btn-danger" id="bulk_delete_btn" type="button">Bulk Delete</button>
                 <thead>
                     <tr>
-                        <th>#</th>
+                        <th><input type="checkbox" id="select_all" title="select all"></th>
                         <th>Job Type</th>
                         @if($show_actions)
                         <th>Actions</th>
@@ -79,9 +80,8 @@
             serverSide: true,
             ajax: "{{ route('job_types.index') }}",
             columns: [{
-                    data: 'serial_no',
-                    name: 'serial_no',
-                    className: 'dt-left',
+                    data: 'checkbox',
+                    name: 'checkbox',
                     orderable: false,
                     searchable: false
                 },
@@ -120,7 +120,6 @@
 
         });
 
-
         //  form validation check
         form.on('submit', function(e) {
             if (!this.checkValidity()) {
@@ -130,35 +129,6 @@
             $(this).addClass('was-validated');
         });
     });
-
-    // sweetalert on delete
-    function confirmDelete(event) {
-        event.preventDefault();
-        var form = event.target.closest('form');
-
-        Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                form.submit();
-            }
-        });
-    }
 </script>
 @endpush
 
-@push('styles')
-<style>
-    table.dataTable td:nth-child(2) {
-        word-break: break-all;
-        white-space: pre-line;
-    }
-</style>
-
-@endpush

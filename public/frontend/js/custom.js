@@ -1,3 +1,4 @@
+// open apply model
 function openApplyModel(job_id) {
     document.getElementById("job_id").value = job_id;
     const modal = new bootstrap.Modal(
@@ -5,6 +6,8 @@ function openApplyModel(job_id) {
     );
     modal.show();
 }
+
+// add skill batch wise
 const skill_input = document.getElementById("skill_input");
 const badges_container = document.getElementById("badges_container");
 const hidden_input = document.getElementById("skills_hidden");
@@ -39,7 +42,6 @@ function addSkillBadge(skill) {
     badge.appendChild(close_button);
     badges_container.appendChild(badge);
 }
-
 function updateHiddenInput() {
     hidden_input.value = JSON.stringify(skills_array);
 }
@@ -55,8 +57,7 @@ badges_container.addEventListener("click", function (event) {
 });
 
 $("#load_more").hide();
-var load_more = 0;
-function searchJobs() {
+function searchJobs(load_more = null) {
     var job_type = $("#job_type").val();
     var designation = $("#designation").val();
     var search_term = $("#search_term").val();
@@ -72,8 +73,6 @@ function searchJobs() {
         },
         success: function (response) {
             var html = "";
-            load_more += response.limit;
-            console.log(load_more);
             html += `<span  id="limit_element" data-limit=${response.limit}> </span>`;
             if (response.jobs.length > 0) {
                 $.each(response.jobs, function (index, job) {
@@ -125,15 +124,19 @@ function searchJobs() {
 $("#job_type, #designation").on("change", function () {
     searchJobs();
 });
+
 $("#search_btn").on("click", function (e) {
     e.preventDefault();
     searchJobs();
 });
+
 $("#load_more_btn").on("click", function (e) {
     e.preventDefault();
     var spinner = document.getElementById("spinner");
     var button_text = document.getElementById("button_text");
     spinner.classList.remove("d-none");
     button_text.style.display = "none";
-    searchJobs();
+    var limit_element = document.getElementById('limit_element');
+    var load_more = limit_element.getAttribute('data-limit');
+    searchJobs(load_more);
 });

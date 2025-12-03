@@ -26,9 +26,10 @@
         <div class="card-header">Jobs list</div>
         <div class="card-body">
             <table class="table table-bordered " id="role_table">
+                <button class="btn btn-danger" id="bulk_delete_btn" type="button">Bulk Delete</button>
                 <thead>
                     <tr>
-                        <th>#</th>
+                        <th><input type="checkbox" id="select_all" title="select all"></th>
                         <th>Name</th>
                         <th>Permissions</th>
                         <th>Actions</th>
@@ -54,9 +55,8 @@
                 }
             },
             columns: [{
-                    data: 'serial_no',
-                    name: 'serial_no',
-                    className: 'dt-left',
+                    data: 'checkbox',
+                    name: 'checkbox',
                     orderable: false,
                     searchable: false
                 },
@@ -77,37 +77,15 @@
 
     });
 
-
-    // sweetalert on delete
-    function confirmDelete(event) {
-        event.preventDefault();
-        var form = event.target.closest('form');
-
-        Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                form.submit();
-            }
-        });
-    }
 </script>
 @endpush
 
 @push('styles')
 <style>
-
-table.dataTable td:nth-child(3)
-{
-  word-break: break-all;
-  white-space: pre-line;
-}
+    table.dataTable td:nth-child(3) {
+        word-break: break-all;
+        white-space: pre-line;
+    }
 </style>
 
 @endpush

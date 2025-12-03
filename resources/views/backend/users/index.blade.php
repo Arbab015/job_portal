@@ -9,6 +9,7 @@
             <span id="import_progress"></span>
             <button type="button" class="btn btn-primary" id="import_btn">Import</button>
             <a href="{{ route('users.create') }}" class="btn btn-primary" id="addBtn" type="button">Create</a>
+
         </div>
 
     </div>
@@ -30,9 +31,10 @@
         <div class="card-header">Users list</div>
         <div class="card-body">
             <table class="table table-bordered " id="users_table">
+                <button class="btn btn-danger" id="bulk_delete_btn" type="button">Bulk Delete</button>
                 <thead>
                     <tr>
-                        <th>#</th>
+                        <th><input type="checkbox" id="select_all" title="select all"></th>
                         <th>Name</th>
                         <th>Email</th>
                         <th>Role</th>
@@ -53,7 +55,6 @@
                     <h5 class="modal-title" id="myModalLabel">Import File</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-
                 <div class="modal-body">
                     <div class="form-group">
                         <div class="mb-3">
@@ -61,10 +62,22 @@
                             <input class="form-control" type="file" name="csv_file" required id="csvFile" accept=".csv">
                             <div class="invalid-feedback">Please choose a CSV file.</div>
                         </div>
-
+                    </div>
+                    <div class="form-group">
+                        <label for="role" class="form-label">Roles:</label>
+                        @if($roles->isNotEmpty())
+                        <div class="col-sm-6">
+                            <select class="form-select " required aria-label="Default select example" name="role">
+                                <option value="" selected>Choose any role</option>
+                                @foreach ($roles as $role)
+                                <option value="{{ $role->name }}">{{ $role->name }}</option>
+                                @endforeach
+                            </select>
+                            <div class="invalid-feedback">Please select role.</div>
+                        </div>
+                        @endif
                     </div>
                 </div>
-
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
                     <button class="btn-soft" id="submitBtn" type="button">Save changes</button>
@@ -73,8 +86,6 @@
         </div>
     </div>
 </div>
-
-
 @endsection
 
 @push('scripts')
@@ -90,9 +101,8 @@
                 }
             },
             columns: [{
-                    data: 'serial_no',
-                    name: 'serial_no',
-                    className: 'dt-left',
+                    data: 'checkbox',
+                    name: 'checkbox',
                     orderable: false,
                     searchable: false
                 },
@@ -118,73 +128,47 @@
     });
 
 
-
-    // sweetalert on delete
-    function confirmDelete(event) {
-        event.preventDefault();
-        var form = event.target.closest('form');
-
-        Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                form.submit();
-            }
-        });
-    }
-
-    $('#import_btn').on('click', function() {
+    $("#import_btn").on("click", function() {
         modal.show();
     });
-
-
     // model form validation
-    const form = $('#import_file_form');
-    const modal = new bootstrap.Modal(document.getElementById('myModal'));
-
-    form.on('submit', function(e) {
+    const form = $("#import_file_form");
+    const modal = new bootstrap.Modal(document.getElementById("myModal"));
+    form.on("submit", function(e) {
         if (!this.checkValidity()) {
             e.preventDefault();
             e.stopPropagation();
         }
-        $(this).addClass('was-validated');
+        $(this).addClass("was-validated");
     });
-
-
 
     // to show progress on import csv file
     function showProgress() {
         $.ajax({
-            url: 'get_progress',
-            method: 'GET',
+            url: "get_progress",
+            method: "GET",
             success: function(response) {
-                if (response.percentage == undefined) {
-                    $('#import_progress').hide();
+                if (
+                    response.percentage == undefined ||
+                    response.percentage == 0 ||
+                    response.percentage == null
+                ) {
+                    $("#import_progress").hide();
                 } else {
-                    $('#import_progress')
-                        .text('Import Progress: ' + response.percentage + '%')
+                    $("#import_progress")
+                        .text("Import Progress: " + response.percentage + "%")
                         .show();
                 }
             },
             error: function() {
-                $('#import_progress').text('Error ');
-            }
+                $("#import_progress").text("Error ");
+            },
         });
-
     }
     setInterval(showProgress, 200);
-
-    const myButton = document.getElementById('submitBtn');
-    const progress = document.getElementById('import_progress');
-    myButton.addEventListener('click', function(event) {
+    const myButton = document.getElementById("submitBtn");
+    myButton.addEventListener("click", function(event) {
         form.submit();
-        modal.hide();
     });
 </script>
 @endpush
@@ -196,5 +180,4 @@
         white-space: pre-line;
     }
 </style>
-
 @endpush

@@ -13,6 +13,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ChatBoxController;
+use App\Http\Controllers\CompressionController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
@@ -26,13 +27,15 @@ Route::middleware('auth')->group(function () {
   Route::get('designations', [DesignationController::class, 'index'])->name('designations.index')->middleware('permission:designations_listing');
   Route::post('designations', [DesignationController::class, 'store'])->name('designations.store');
   Route::put('designations/{id}', [DesignationController::class, 'update'])->name('designations.update');
-  Route::delete('designations/{id}', [DesignationController::class, 'destroy'])->name('designations.destroy')->middleware('permission:delete_designation');;
+  Route::delete('designations/{id}', [DesignationController::class, 'destroy'])->name('designations.destroy')->middleware('permission:delete_designation');
+  Route::post('/designation/bulk-delete', [DesignationController::class, 'bulkDelete'])->name('designations.bulk_delete')->middleware('permission:delete_designation');;
 
   //  Job Types Routes
   Route::get('job_types', [JobTypeController::class, 'index'])->name('job_types.index')->middleware('permission:jobtypes_listing');
   Route::post('job_types', [JobTypeController::class, 'store'])->name('job_types.store');
   Route::put('job_types/{id}', [JobTypeController::class, 'update'])->name('job_types.update');
   Route::delete('job_types/{id}', [JobTypeController::class, 'destroy'])->name('job_types.destroy')->middleware('permission:delete_jobtype');
+  Route::post('/jobtype/bulk-delete', [JobTypeController::class, 'bulkDelete'])->name('job_types.bulk_delete')->middleware('permission:delete_jobtype');
 
   //  Jobs Routes
   Route::controller(JobController::class)->group(function () {
@@ -42,8 +45,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/jobs/edit/{slug}', 'edit')->name('jobs.edit')->middleware('permission:edit_job');
     Route::put('/jobs/{slug}', 'update')->name('jobs.update');
     Route::delete('/jobs/{slug}', 'destroy')->name('jobs.destroy')->middleware('permission:delete_job');
+    Route::post('/jobpost/bulk-delete', 'bulkDelete')->name('jobs.bulk_delete')->middleware('permission:delete_job');
   });
-
 
   // user profile
   Route::controller(ProfileController::class)->group(function () {
@@ -54,7 +57,6 @@ Route::middleware('auth')->group(function () {
 
   // route work only if role is super admin 
   Route::middleware('role:Super Admin')->group(function () {
-    // Role routes
     Route::controller(RoleController::class)->group(function () {
       Route::get('roles', 'index')->name('roles.index');
       Route::get('role/create', 'create')->name('role.create');
@@ -62,6 +64,7 @@ Route::middleware('auth')->group(function () {
       Route::get('role/{id}/edit', 'edit')->name('roles.edit');
       Route::put('role/{id}', 'update')->name('roles.update');
       Route::delete('role/{id}', 'destroy')->name('roles.destroy');
+      Route::post('/role/bulk-delete', 'bulkDelete')->name('roles.bulk_delete');
     });
 
     // users routes
@@ -74,14 +77,24 @@ Route::middleware('auth')->group(function () {
       Route::get('user/{id}/edit', 'edit')->name('users.edit');
       Route::put('user/{id}', 'update')->name('users.update');
       Route::delete('user/{id}', 'destroy')->name('users.destroy');
+      Route::post('/users/bulk-delete',  'bulkDelete')->name('users.bulk_delete');
     });
 
-    // applicants routes
+    // applicants routes;
     Route::controller(ApplicantController::class)->group(function () {
       Route::get('applicants', 'index')->name('applicants.index');
       Route::get('applicants/download/{id}', 'download')->name('file.download');
       Route::post('applicants/accepted/{id}', 'statusAccept')->name('status.accept');
       Route::post('applicants/rejected/{id}', 'statusReject')->name('status.reject');
+    });
+
+    Route::controller(CompressionController::class)->group(function () {
+      Route::get('compression', 'index')->name('compression.index');
+      Route::post('compression/upload', 'fileUpload')->name('file.upload');
+      Route::post('/compressed_files/bulk-delete', 'bulkDelete')->name('compressed_file.bulk_delete');
+      Route::get('compressed_file/download/{id}', 'download')->name('compressed_file.download');
+      Route::delete('compressed_file/{id}', 'destroy')->name('compressed_file.destroy');
+      Route::put('compressed_file/edit/{id}', 'update')->name('compressed_file.update');
     });
   });
 

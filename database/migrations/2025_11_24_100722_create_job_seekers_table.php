@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('applicants', function (Blueprint $table) {
-            $table->dropForeign(['job_id']);
-            $table->dropColumn('job_id');
+        Schema::create('job_seekers', function (Blueprint $table) {
+            $table->id();
+            $table->morphs('applicantable');
+            $table->timestamps();
         });
     }
 
@@ -22,8 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('applicants', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('job_seekers');
     }
 };

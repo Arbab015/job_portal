@@ -14,10 +14,8 @@ class RoleController extends Controller
     {
         if ($request->ajax()) {
             return DataTables::of(Role::orderBy("id", "desc"))
-                ->addColumn('serial_no', function () {
-                    static $count = 0;
-                    $count++;
-                    return $count;
+                ->addColumn('checkbox', function ($user) {
+                    return '<input type="checkbox" class="checkbox" data_type="role" title="Select Record" value="' . $user->id . '">';
                 })
                 ->addColumn('permissions', function ($role) {
                     return $role->permissions->pluck('name')->implode(', ');
@@ -35,7 +33,7 @@ class RoleController extends Controller
                         . '</form>';
                     return $edit . ' ' . $delete;
                 })
-                ->rawColumns(['actions'])
+                ->rawColumns(['actions', 'checkbox'])
                 ->make(true);
         }
 
@@ -99,8 +97,7 @@ class RoleController extends Controller
                 $role->syncPermissions($request->permission);
             }
             return redirect()->route('roles.index')->with('success', 'Role Updated Succesfully. ');
-        }
-         catch (\Illuminate\Database\QueryException $e) {
+        } catch (\Illuminate\Database\QueryException $e) {
             $errorCode = $e->errorInfo[1];
             if ($errorCode == '1062') {
                 return redirect()->back()->withInput()->with('error',  'Duplicate name entry');
@@ -116,6 +113,16 @@ class RoleController extends Controller
             $role = Role::findOrFail($id);
             $role->delete();
             return redirect()->route('roles.index')->with('success', 'Role deleted successfully. ');
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
+        }
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        try {
+            Role::whereIn('id', $request->ids)->delete();
+            return response()->json(['success' => true]);
         } catch (Exception $e) {
             return redirect()->back()->withInput()->with('error', $e->getMessage());
         }

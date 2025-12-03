@@ -18,15 +18,14 @@
         {{ Session::get('error') }}
     </div>
     @endif
-
-
     <div class="card">
         <div class="card-header">Designation List</div>
         <div class="card-body">
             <table class="table table-bordered" id="designations-table">
+                <button class="btn btn-danger" id="bulk_delete_btn" type="button">Bulk Delete</button>
                 <thead>
                     <tr>
-                        <th>#</th>
+                        <th><input type="checkbox" id="select_all" title="select all"></th>
                         <th>Designation Name</th>
                         @if($show_actions)
                         <th>Actions</th>
@@ -45,21 +44,17 @@
             <form method="POST" class="needs-validation" novalidate id="designationForm">
                 @csrf
                 <div id="methodField"></div>
-
                 <div class="modal-header">
                     <h5 class="modal-title" id="myModalLabel"></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-
                 <div class="modal-body">
                     <div class="form-group">
-
                         <input type="text" name="name" class="form-control" required
                             placeholder="Enter a designation name">
                         <div class="invalid-feedback">Please enter a designation name.</div>
                     </div>
                 </div>
-
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
                     <button class="btn-soft" type="submit">Save changes</button>
@@ -85,9 +80,8 @@
             serverSide: true,
             ajax: "{{ route('designations.index') }}",
             columns: [{
-                    data: 'serial_no',
-                    name: 'serial_no',
-                    className: 'dt-left',
+                    data: 'checkbox',
+                    name: 'checkbox',
                     orderable: false,
                     searchable: false
                 },
@@ -95,8 +89,7 @@
                     data: 'name',
                     name: 'name'
                 },
-                @if($show_actions)
-                {
+                @if($show_actions) {
                     data: 'actions',
                     name: 'actions',
                     orderable: false,
@@ -131,37 +124,16 @@
             $(this).addClass('was-validated');
         });
     });
-
-    // sweetalert on delete
-    function confirmDelete(event) {
-        event.preventDefault();
-        var form = event.target.closest('form');
-
-        Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                form.submit();
-            }
-        });
-    }
 </script>
 @endpush
 
 @push('styles')
 <style>
-
-table.dataTable td:nth-child(3)
-{
-  word-break: break-all;
-  white-space: pre-line;
-}
+    table.dataTable td:nth-child(2),
+    table.dataTable td:nth-child(3),
+    table.dataTable td:nth-child(4) {
+        word-break: break-all;
+        white-space: pre-line;
+    }
 </style>
-
 @endpush

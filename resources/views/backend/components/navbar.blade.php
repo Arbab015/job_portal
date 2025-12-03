@@ -83,7 +83,7 @@
                 @if(isset($notification_arrays))
                 <div class="notifications overflow-y-scroll" style="max-height: 290px;">
                     @foreach ($notification_arrays as $key => $notification)
-                    <div @class([ 'dropdown-item' , 'd-flex' , 'justify-content-between' , 'p-3' , 'mb-1' , 'notification_item' , 'unread-dropdown-item'=> ! $notification['read_at']]) data-id="{{ $notification['id'] }}">
+                    <div @class([ 'dropdown-item' , 'd-flex' , 'justify-content-between' , 'p-3' , 'mb-1' , 'notification_item' , 'unread-dropdown-item'=> $notification['read_at']]) data-id="{{ $notification['id'] }}">
                         <div class="fw-normal mb-0">
                             <div>{{ $notification['data'] }}</div>
                             <small>{{ $notification['created_at'] }}</small>
@@ -146,80 +146,79 @@
 
 @push('scripts')
 <script>
-        // for read notification and read all notification
-        $('.read-btn').on('click', function(e) {
-            e.preventDefault();
-            let notification_item = $(this).closest('.notification_item');
-            let id = notification_item.data('id');
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    // for read notification and read all notification
+    $('.read-btn').on('click', function(e) {
+        e.preventDefault();
+        let notification_item = $(this).closest('.notification_item');
+        let id = notification_item.data('id');
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({
+            url: id ? 'notification/read/' + id : 'notification/read/',
+            method: 'POST',
+            success: function(response) {
+                console.log('notification read')
+                let message = id ? 'You have read notification' : 'You have read all notifications';
+                $('.toast-body').text(message);
+                const toastEl = document.getElementById('toast_message');
+                const toast = new bootstrap.Toast(toastEl);
+                toast.show();
+                setInterval(function() {
+                    location.reload();
+                }, 1000);
+            },
+            error: function(xhr) {
+                console.error('An error occurred:', xhr.responseText);
+            }
+        });
+    });
+
+    // for delete notification and delete all notifications
+    $('.delete-btn').on('click', function(e) {
+        e.preventDefault();
+        let notification_item = $(this).closest('.notification_item');
+        let id = notification_item.data('id');
+        Swal.fire({
+                title: id ? 'Delete this notification?' : 'Delete all notifications?',
+                text: id ? "This notification will be permanently removed." : "All notifications will be deleted.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            })
+            .then((result) => {
+                if (result.isConfirmed) {
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    });
+                    $.ajax({
+                        url: id ? 'notification/delete/' + id : 'notification/delete/',
+                        method: 'POST',
+                        success: function(response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: id ? 'Notification deleted' : 'All notifications deleted',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                            setInterval(function() {
+                                location.reload();
+                            }, 1000);
+                        },
+                        error: function(xhr) {
+                            console.error('An error occurred:', xhr.responseText);
+                        }
+                    });
                 }
             });
-            $.ajax({
-                url: id ? 'notification/read/' + id : 'notification/read/',
-                method: 'POST',
-                success: function(response) {
-                    console.log('notification read')
-                    let message = id ? 'You have read notification' : 'You have read all notifications';
-                    $('.toast-body').text(message);
-                    const toastEl = document.getElementById('toast_message');
-                    const toast = new bootstrap.Toast(toastEl);
-                    toast.show();
-                    setInterval(function() {
-                        location.reload();
-                    }, 1000);
-                },
-                error: function(xhr) {
-                    console.error('An error occurred:', xhr.responseText);
-                }
-            });
-        });
 
-        // for delete notification and delete all notifications
-        $('.delete-btn').on('click', function(e) {
-            e.preventDefault();
-            let notification_item = $(this).closest('.notification_item');
-            let id = notification_item.data('id');
-            Swal.fire({
-                    title: id ? 'Delete this notification?' : 'Delete all notifications?',
-                    text: id ? "This notification will be permanently removed." : "All notifications will be deleted.",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, delete it!'
-                })
-                .then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajaxSetup({
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            }
-                        });
-                        $.ajax({
-                            url: id ? 'notification/delete/' + id : 'notification/delete/',
-                            method: 'POST',
-                            success: function(response) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: id ? 'Notification deleted' : 'All notifications deleted',
-                                    showConfirmButton: false,
-                                    timer: 1500
-                                });
-                                setInterval(function() {
-                                    location.reload();
-                                }, 1000);
-                            },
-                            error: function(xhr) {
-                                console.error('An error occurred:', xhr.responseText);
-                            }
-                        });
-                    }
-                });
-
-        });
-  
+    });
 </script>
 @endpush
 

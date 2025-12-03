@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
@@ -32,7 +33,7 @@ class AppServiceProvider extends ServiceProvider
                 $myarray['data'] = $dataitem[0];
                 $myarray['created_at'] = Carbon::parse($notification['created_at'])->diffForHumans();
                 $myarray['id'] = $notification['id'];
-                 $myarray['read_at'] = $notification['read_at'];
+                $myarray['read_at'] = $notification['read_at'];
                 $message[] = $myarray;
                 $myarray = [];
             }

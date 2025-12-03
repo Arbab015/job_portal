@@ -29,7 +29,7 @@ class ProfileController extends Controller
             $validated_data = $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255',
-                'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+                'profile_picture' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
             ]);
             $user = User::findOrFail($id);
             if ($request->filled('password')) {
@@ -46,7 +46,6 @@ class ProfileController extends Controller
                 if ($user->profile_picture && Storage::disk('public')->exists($old_file_path)) {
                     Storage::disk('public')->delete($old_file_path);
                 }
-
                 $image = $request->file('profile_picture');
                 $image_name = time() . '_' . $image->getClientOriginalName();
 
@@ -54,12 +53,15 @@ class ProfileController extends Controller
                 $image->storeAs('profile_pictures', $image_name, 'public');
 
                 $validated_data['profile_picture'] = $image_name;
+
+                $user->update([
+                    'profile_picture' => $validated_data['profile_picture']
+                ]);
             }
 
             $user->update([
                 'name' => $validated_data['name'],
                 'email' => $validated_data['email'],
-                'profile_picture' => $validated_data['profile_picture']
             ]);
 
             return redirect()->back()->with('success', 'User updated successfully');

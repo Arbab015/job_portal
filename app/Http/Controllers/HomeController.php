@@ -3,23 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Models\Applicant;
+use App\Models\applicantable;
+use App\Models\BoyApplicant;
 use App\Models\Designation;
+use App\Models\GirlApplicant;
 use App\Models\JobPost;
 use App\Models\JobType;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 class HomeController extends Controller
 {
     public function index()
     {
         $latest_jobs = JobPost::whereDate('due_date', '>=', Carbon::today())->orderBy('id', 'desc')->take(3)->get();
-        // dd($latest_jobs);
         return view('frontend.home', compact('latest_jobs',));
     }
-
 
     public function contactIndex()
     {
@@ -28,16 +31,20 @@ class HomeController extends Controller
 
     public function jobsDetail($slug)
     {
+
+        $applicant = applicantable::find(6);
+        $relation = $applicant->applicantable;
+        dd($relation);
         $job = JobPost::where('slug', $slug)->firstOrFail();
-        $no_of_applicants = $job->applicant()->count();
-       
+        $no_of_applicants = $job->boyApplicants()->count()
+            + $job->girlApplicants()->count();
         $period = $job->created_at->diffForHumans();
-        return view('frontend.jobs_detail', compact('job', 'period' , 'no_of_applicants'));
+        return view('frontend.jobs_detail', compact('job', 'period', 'no_of_applicants'));
     }
 
     public function jobsViewAll(Request $request)
     {
-        $load_limit = $request->input('load_limit');
+        $load_limit = $request->input('load_limit', 0);
         $limit = 3;
         $limit += $load_limit;
         $search_term = $request->input('search_term');
@@ -66,60 +73,59 @@ class HomeController extends Controller
                 'job_image' => $job_image
             ]);
         }
-
         $jobtypes = JobType::pluck('title', 'id');
         $designations = Designation::pluck('name', 'id');
         return view('frontend.all_jobs', compact('jobtypes', 'designations', 'search_term'));
     }
 
-
     public function jobApply(Request $request)
     {
-
         try {
             $email = $request->input('email');
             $mobile_no = $request->input('mobile_no');
-
             $validated = $request->validate([
                 'name'       => 'required|string|max:255',
                 'email'      => 'required|email|max:255',
-                'mobile_no'  => 'required|string|max:20',
+                'mobile_no'  => 'required|numeric|digits_between:11,15',
                 'experience' => 'required',
                 'skills'     => 'required',
                 'file'       => 'required|mimes:pdf,doc,docx|max:2048',
-                'notes'       => 'nullable|text',
-                'job_id'    => 'required|exists:job_posts,id'
+                'notes'      => 'nullable|text',
+                'job_id'     => 'required|exists:job_posts,id',
+                'gender'     => 'required'
             ]);
 
             if ($request->hasFile('file')) {
-                $fileName = time() . '_' . $request->file('file')->getClientOriginalName();
-                $filePath = $request->file('file')->storeAs('resumes', $fileName, 'public');
-                $validated['file'] =  $filePath;
+                $fileName = time() . '_' . $request['name'] . '_' . $request->file('file')->getClientOriginalName();
+                $file_path = $request->file('file')->storeAs('resumes', $fileName, 'public');
+                $validated['file'] =  $file_path;
             }
+
+
             $applicant = Applicant::where('email', $email)->where('mobile_no', $mobile_no)->first();
             if (!$applicant) {
-                $applicant = Applicant::create([
+                if ($validated['gender'] == 'Male') {
+                    $applicantable = BoyApplicant::create(['name' => $validated['name']]);
+                } else {
+                    $applicantable = GirlApplicant::create(['name' => $validated['name']]);
+                }
+
+                $applicant = $applicantable->applicant()->create([
                     'name'       => $validated['name'],
                     'email'      => $validated['email'],
                     'mobile_no'  => $validated['mobile_no'],
                     'experience' => $validated['experience'],
                     'skills'     => $validated['skills'],
                     'file'       => $validated['file'],
-                    'notes'       => $validated['notes'],
+                    'notes'      => $validated['notes'],
                 ]);
+
+                // Attach job
+                $applicantable->jobs()->attach($validated['job_id']);
             }
-
-
-            DB::table('applicant_jobs')->insert([
-                'applicant_id' => $applicant->id,
-                'job_id' => $validated['job_id']
-            ]);
-
             return redirect()->back()->with('success', 'Your application submitted successfully!');
         } catch (Exception $e) {
             return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
     }
-
-
 }

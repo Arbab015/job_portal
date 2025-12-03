@@ -52,9 +52,14 @@
                      <i class="fa-solid fa-users"></i> Users
                  </a>
                  @endcan
-                  @can('Super Admin')
+                 @can('Super Admin')
                  <a href="{{ route('applicants.index') }}" class="nav-item nav-link">
                      <i class="fa-solid fa-users"></i> Applicants
+                 </a>
+                 @endcan
+                 @can('Super Admin')
+                 <a href="{{ route('compression.index') }}" class="nav-item nav-link">
+                    <i class="fa-solid fa-file-zipper"></i> Compression
                  </a>
                  @endcan
              </div>

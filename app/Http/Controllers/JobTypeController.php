@@ -15,44 +15,39 @@ class JobTypeController extends Controller
 {
      public function index(Request $request)
      {
-           $user = Auth::user();
+          $user = Auth::user();
           if ($request->ajax()) {
                return DataTables::of(JobType::orderBy('id', 'desc'))
-                    ->addColumn('serial_no', function () {
-                         static $count = 0;
-                         $count++;
-                         return $count;
+                    ->addColumn('checkbox', function ($user) {
+                         return '<input type="checkbox" class="checkbox" data_type="jobtype" title="Select Record" value="' . $user->id . '">';
                     })
                     ->addColumn('actions', function ($JobType) use ($user) {
-                    $edit =  "";
-                    $delete = "";
-                    if ($user->can('edit_jobtype')) {
-                         $edit = '<i class="fa-solid  fa-pen-to-square text-primary edit-btn"
+                         $edit =  "";
+                         $delete = "";
+                         if ($user->can('edit_jobtype')) {
+                              $edit = '<i class="fa-solid  fa-pen-to-square text-primary edit-btn"
                          role= "button"
                          title="Edit"
                          data-id="' . $JobType->id . '" 
                                  data-title="' . $JobType->title . '">
                         </i>';
-
-                    }
-                     if ($user->can('delete_jobtype')) {
-                         $delete =  '<form action="' . route('job_types.destroy', $JobType->id) . '" method="POST" style="display:inline;">'
-                              . csrf_field()
-                              . method_field('DELETE')
-                              . '<i class="fa-solid fa-trash-can text-danger" role="button" title="Delete" onclick="confirmDelete(event)">
+                         }
+                         if ($user->can('delete_jobtype')) {
+                              $delete =  '<form action="' . route('job_types.destroy', $JobType->id) . '" method="POST" style="display:inline;">'
+                                   . csrf_field()
+                                   . method_field('DELETE')
+                                   . '<i class="fa-solid fa-trash-can text-danger" role="button" title="Delete" onclick="confirmDelete(event)">
                                 </i>'
-                              . '</form>';
-
-                     }
+                                   . '</form>';
+                         }
                          return $edit . ' ' . $delete;
                     })
-
-                    ->rawColumns(['actions'])
+                    ->rawColumns(['actions', 'checkbox'])
                     ->make(true);
           }
-            $can_edit = $user->can('edit_jobtype');
-        $can_delete = $user->can('delete_jobtype');
-        $show_actions = $can_edit || $can_delete;
+          $can_edit = $user->can('edit_jobtype');
+          $can_delete = $user->can('delete_jobtype');
+          $show_actions = $can_edit || $can_delete;
 
           return view('backend.job_types.index', compact('show_actions'));
      }
@@ -96,12 +91,21 @@ class JobTypeController extends Controller
                $jobtype = JobType::findorfail($id);
                $jobtype->delete();
                return redirect()->route('job_types.index')->with('success', 'Job Type deleted successfully. ');
-          } 
-          catch (QueryException $e) {
+          } catch (QueryException $e) {
                if ($e->getCode() == 23000) {
                     return redirect()->back()->with('error', 'Cannot delete user as there are related records.');
                }
                throw $e;
+          } catch (Exception $e) {
+               return redirect()->back()->withInput()->with('error', $e->getMessage());
+          }
+     }
+
+     public function bulkDelete(Request $request)
+     {
+          try {
+               JobType::whereIn('id', $request->ids)->delete();
+               return response()->json(['success' => true]);
           } catch (Exception $e) {
                return redirect()->back()->withInput()->with('error', $e->getMessage());
           }

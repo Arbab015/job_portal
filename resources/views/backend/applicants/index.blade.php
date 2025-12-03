@@ -25,6 +25,7 @@
             <table class="table table-bordered " id="applicants-table">
                 <thead>
                     <tr>
+                        <th>#</th>
                         <th>Name</th>
                         <th>Phone</th>
                         <th>Email</th>
@@ -50,6 +51,11 @@
             serverSide: true,
             ajax: "{{ route('applicants.index') }}",
             columns: [{
+                    data: 'DT_RowIndex',
+                    name: 'DT_RowIndex',
+                    orderable: false,
+                    searchable: false
+                }, {
                     data: 'name',
                     name: 'name',
                 },
@@ -87,40 +93,6 @@
             ]
         });
     });
-
-    function confirmAccept(event) {
-        event.preventDefault();
-        var form = event.target.closest('form');
-        Swal.fire({
-            title: "Are you sure?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, Approve!"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                form.submit();
-            }
-        });
-    }
-
-     function confirmReject(event) {
-        event.preventDefault();
-        var form = event.target.closest('form');
-        Swal.fire({
-            title: "Are you sure?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, Reject!"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                form.submit();
-            }
-        });
-    }
 </script>
 @endpush
 
@@ -129,7 +101,8 @@
     table.dataTable td:nth-child(2),
     table.dataTable td:nth-child(3),
     table.dataTable td:nth-child(4),
-    table.dataTable td:nth-child(5) {
+    table.dataTable td:nth-child(5),
+    table.dataTable td:nth-child(6) {
         word-break: break-all;
         white-space: pre-line;
     }

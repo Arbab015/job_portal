@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Redirect;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -24,11 +23,8 @@ class UserController extends Controller
     {
         if ($request->ajax()) {
             return DataTables::of(User::orderBy('id', 'desc'))
-
-                ->addcolumn('serial_no', function () {
-                    static $count = 0;
-                    $count++;
-                    return $count;
+                ->addColumn('checkbox', function ($user) {
+                    return '<input type="checkbox" class="checkbox" data_type="user" title="Select Record" value="' . $user->id . '">';
                 })
                 ->addColumn('roles', function ($user) {
                     return $user->roles->pluck('name')->implode(', ');
@@ -46,12 +42,13 @@ class UserController extends Controller
                         . '</form>';
                     return $edit . ' ' . $delete;
                 })
-                ->rawColumns(['actions'])
+                ->rawColumns(['actions', 'checkbox'])
                 ->make(true);
         }
         $user = Auth::user();
+        $roles = Role::where('name', '!=', 'Super Admin')->orderBy('name', 'desc')->get();
         $percentage = $user->percentage;
-        return view('backend.users.index', compact('percentage'));
+        return view('backend.users.index', compact('percentage', 'roles'));
     }
 
 
@@ -60,15 +57,17 @@ class UserController extends Controller
         try {
             $request->validate([
                 'csv_file' => 'required|file|mimetypes:text/csv,text/plain',
+                'role' => 'required|exists:roles,name'
             ]);
-            
             $user = Auth::user();
+            $role = $request->input('role');
             $user_id = $user->id;
             $user_email = User::pluck('email')->toArray();
             $file = $request->file('csv_file');
+            logger($file);
             $filename = time() . '_' . $file->getClientOriginalName();
             $path = $file->storeAs('imports', $filename, 'public');
-            ImportUsersCsvJob::dispatch(Storage::disk('public')->path($path), $user_id, $user_email);
+            ImportUsersCsvJob::dispatch(Storage::disk('public')->path($path), $user_id, $user_email, $role);
             return back();
         } catch (Exception $e) {
             return back()->with('error', $e->getMessage());
@@ -99,7 +98,6 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-
         try {
             $request->validate([
                 'name' => 'required|string|max:255',
@@ -121,6 +119,7 @@ class UserController extends Controller
     }
     public function edit(string $id)
     {
+
         $user = User::findOrFail($id);
         $roles = Role::where('name', '!=', 'Super Admin')->orderBy('name', 'desc')->get();
         $hasroles = $user->roles->pluck('name');
@@ -140,7 +139,7 @@ class UserController extends Controller
             $validated_data = $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255',
-                'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+                'profile_picture' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
             ]);
             $user = User::findOrFail($id);
             $change_type = [];
@@ -156,6 +155,9 @@ class UserController extends Controller
                 $image->storeAs('profile_pictures', $image_name, 'public');
                 $validated_data['profile_picture'] = $image_name;
                 $change_type[] = 'profile picture';
+                $user->update([
+                    'profile_picture' => $validated_data['profile_picture']
+                ]);
             }
             if ($request->filled('name') && $validated_data['name'] !== $user->name) {
                 $change_type[] = 'name';
@@ -163,11 +165,10 @@ class UserController extends Controller
             $user->update([
                 'name' => $validated_data['name'],
                 'email' => $validated_data['email'],
-                'profile_picture' => $validated_data['profile_picture']
             ]);
 
-            if(!empty($change_type)) {
-                 $user->notify(new ProfileUpdateNotification($user ,  $change_type));
+            if (!empty($change_type)) {
+                $user->notify(new ProfileUpdateNotification($user,  $change_type));
             }
             $user->syncRoles($request->role);
             return redirect()->route('users.index')->with('success', 'User updated successfully');
@@ -185,6 +186,17 @@ class UserController extends Controller
             $user = User::findOrFail($id);
             $user->delete();
             return redirect()->route('users.index')->with('success', 'User deleted successfully');
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
+        }
+    }
+
+
+    public function bulkDelete(Request $request)
+    {
+        try {
+            User::whereIn('id', $request->ids)->delete();
+            return response()->json(['success' => true]);
         } catch (Exception $e) {
             return redirect()->back()->withInput()->with('error', $e->getMessage());
         }

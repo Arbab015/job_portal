@@ -90,8 +90,11 @@
 @push('scripts')
 
 <script>
-    CKEDITOR.replace('job_description');
-
+  ClassicEditor.create(document.querySelector('#job_description'), {
+    ckfinder: {
+        uploadUrl: "{{ route('jobs.store') }}?_token={{ csrf_token() }}"
+    }
+});
     const form = $('#jobs_form');
     //  form validation check
     form.on('submit', function(e) {

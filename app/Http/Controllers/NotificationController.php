@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,13 +22,13 @@ class NotificationController extends Controller
                 $user->unreadNotifications->markAsRead();
                 return response()->json(['success' => true]);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json(['error' => 'An error occurred: ' . $e->getMessage()]);
         }
     }
 
 
-     public function destroy($id = null)
+    public function destroy($id = null)
     {
         $user = Auth::user();
         try {

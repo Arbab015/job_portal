@@ -23,14 +23,17 @@ class ImportUsersCsvJob implements ShouldQueue
     public $user_id;
     public $user_email;
 
+    public $role;
+
     /**
      * Create a new job instance.
      */
-    public function __construct(string $path, int $user_id, array $user_email)
+    public function __construct(string $path, int $user_id, array $user_email, string $role)
     {
         $this->path = $path;
         $this->user_id = $user_id;
         $this->user_email = $user_email;
+        $this->role = $role;
     }
 
     /**
@@ -38,7 +41,6 @@ class ImportUsersCsvJob implements ShouldQueue
      */
     public function handle(): void
     {
-        logger('ewwwwwwwwww');
         try {
             $user = User::findOrFail($this->user_id);
             Log::info("Import started: {$this->path}");
@@ -72,7 +74,6 @@ class ImportUsersCsvJob implements ShouldQueue
                 if (in_array($email, $this->user_email)) {
                     continue;
                 }
-
                 $chunk[] = [
                     'name' => $name,
                     'email' => $email,
@@ -80,7 +81,10 @@ class ImportUsersCsvJob implements ShouldQueue
                 ];
 
                 if (count($chunk) >= $chunk_size) {
-                    User::insert($chunk);
+                    foreach ($chunk as $userData) {
+                        $newUser = User::create($userData);
+                        $newUser->assignRole($this->role);
+                    }
                     $total_imported += count($chunk);
                     $percent = round(($total_imported / $total_rows) * 100, 2);
                     $user->update(['percentage' => $percent]);
@@ -91,7 +95,10 @@ class ImportUsersCsvJob implements ShouldQueue
 
             if (!empty($chunk)) {
                 Log::info("remaining values");
-                User::insert($chunk);
+                foreach ($chunk as $userData) {
+                    $new_user = User::create($userData);
+                    $new_user->assignRole($this->role);
+                }
                 $total_imported += count($chunk);
                 $percent = round(($total_imported / $total_rows) * 100, 2);
                 $user->update(['percentage' => $percent]);
@@ -105,6 +112,4 @@ class ImportUsersCsvJob implements ShouldQueue
             $user->update(['percentage' => 0]);
         }
     }
-
-   
 }

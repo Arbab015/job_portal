@@ -14,21 +14,15 @@ use Illuminate\Support\Facades\Auth;
 
 class DesignationController extends Controller
 {
-
     public function index(Request $request)
     {
         $user = Auth::user();
         if ($request->ajax()) {
 
             return DataTables::of(Designation::orderBy('id', 'desc'))
-                ->addColumn('serial_no', function () {
-                    static $count = 0;
-                    $count++;
-                    return $count;
+                ->addColumn('checkbox', function ($designation) {
+                    return '<input type="checkbox" class="checkbox" data_type="designation" title="Select Record" value="' . $designation->id . '">';
                 })
-
-
-
                 ->addColumn('actions', function ($designation) use ($user) {
                     $edit =  "";
                     $delete = "";
@@ -50,8 +44,8 @@ class DesignationController extends Controller
                     }
                     return $edit . ' ' . $delete;
                 })
-
-                ->rawColumns(['actions'])
+                ->addIndexColumn()
+                ->rawColumns(['actions', 'checkbox'])
                 ->make(true);
         }
         $can_edit = $user->can('edit_designation');
@@ -104,6 +98,16 @@ class DesignationController extends Controller
                 return back()->with('error', 'Cannot delete record as it is referenced by other records.');
             }
             throw $e;
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
+        }
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        try {
+            Designation::whereIn('id', $request->ids)->delete();
+            return response()->json(['success' => true]);
         } catch (Exception $e) {
             return redirect()->back()->withInput()->with('error', $e->getMessage());
         }

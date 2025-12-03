@@ -30,16 +30,17 @@ class ApplicantController extends Controller
                     })
                     ->addColumn('job', function ($applicant) {
                         $job = '';
-                        $jobs = $applicant->jobPost->pluck('title')->toArray();
-                        if (!empty($applicant->jobPost)) {
-                            foreach ($jobs as $value) {
-                                $job .= '<span class="badge bg-secondary ms-1">' . htmlspecialchars($value) . '</span>';
+                        $jobs = $applicant->jobPosts;
+                        logger($jobs);
+                        if (!empty($applicant->jobPosts)) {
+                            foreach ($jobs as $job) {
+                                $job = '<a href=" ' . route('jobs.detail', $job['slug']) . '"><span class="badge bg-secondary ms-1">' . htmlspecialchars($job->title) . '</span> </a>';
                             }
                             return $job;
                         }
                     })
                     ->editColumn('status', function ($row) {
-                        $status = ($row->status === 'accepted')? '<span class="badge bg-success">' . $row->status . '</span>' :  '<span class="badge bg-warning">' . $row->status . '</span>';
+                        $status = ($row->status === 'accepted') ? '<span class="badge bg-success">' . $row->status . '</span>' :  '<span class="badge bg-warning">' . $row->status . '</span>';
                         return $status;
                     })
                     ->addColumn('file', function ($row) {
@@ -49,11 +50,14 @@ class ApplicantController extends Controller
                         return $download_icon;
                     })
                     ->addColumn('actions', function ($row) {
-                        $approve =  '<form action="' . route('status.accept', $row->id) . '"  method="POST" style="display:inline;">'
-                            . csrf_field()
-                            . '<i class="fa-solid fa-check text-success" role= "button" title="Accept" onclick="confirmAccept(event)">
+                        $approve = "";
+                        if ($row->status != 'accepted') {
+                            $approve .=  '<form action="' . route('status.accept', $row->id) . '"  method="POST" style="display:inline;">'
+                                . csrf_field()
+                                . '<i class="fa-solid fa-check text-success" role= "button" title="Accept" onclick="confirmAccept(event)">
                         </i>'
-                            . '</form>';
+                                . '</form>';
+                        }
 
                         $reject =  '<form action="' . route('status.reject', $row->id) . '"  method="POST" style="display:inline;">'
                             . csrf_field()
@@ -61,9 +65,10 @@ class ApplicantController extends Controller
                         </i>'
                             . '</form>';
 
-                        return $approve . ' ' . $reject;
+                        return $approve . '  ' . $reject;
                     })
-                    ->rawColumns(['actions', 'file', 'status', 'skills', 'job'])
+                    ->addIndexColumn()
+                    ->rawColumns(['serial_no', 'actions', 'file', 'status', 'skills', 'job'])
                     ->make(true);
             }
             return view('backend.applicants.index');
@@ -103,8 +108,6 @@ class ApplicantController extends Controller
             return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
     }
-
-
 
     public function statusReject($id)
     {
